@@ -35,7 +35,7 @@ My name is **[KK Thuwajit]{color:blue}**, known online as **[KKuroma]{color:blue
 
 # About this site
 
-- **[Origin]{color:blue}**: I built my old site using Next.js and TailwindCSS which, in part to my lack of optimization, leads to needing constant updates and slow loads on older devices. After discussing with my friend [HarutoHiroki](https://harutohiroki.com) and several months using a minimalist desktop on [Hyprland](https://hypr.land) (a tiling window manager), I've decided to solidify my design philosophy on a minimal tiling-like design. As all of my pages are built dynamically from JSON+Markdown configs, spinning up new pages has never been made easier!
+- **[Origin]{color:blue}**: I built my [old site](https://legacy.kuroma.dev) using Next.js and TailwindCSS which, in part to my lack of optimization, leads to needing constant updates and slow loads on older devices. After discussing with my friend [HarutoHiroki](https://harutohiroki.com) and several months using a minimalist desktop on [Hyprland](https://hypr.land) (a tiling window manager), I've decided to solidify my design philosophy on a minimal tiling-like design. As all of my pages are built dynamically from JSON+Markdown configs, spinning up new pages has never been made easier!
 - **[Why a blog?]{color:blue}**: I've had an empty blog site on my old site for years, whether because of time or simply because I hadn't have much to share. Now with AI being more prevalent than ever and opinions being overridden by AI generated content, I hope to use my site as a stance to express my genuine human thoughts and ideas to keep human-written content relevant on the internet before AI trained on AI generated content eventually collapses on its own AI generated training data.
 
 ---
