@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Editor</title>
+  <link rel="icon" href="../assets/icon.webp" type="image/webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Maple+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../markdown.css">
+  <link rel="stylesheet" href="../website.css">
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-left">
+        <a href="../index.html#/" class="nav-link">
+          <i class="fa fa-home"></i> Back to Home
+        </a>
+        <a href="../index.html#/blog" class="nav-link" style="margin-left: 0.5rem;">
+          <i class="fa fa-book"></i> Back to Blogs
+        </a>
+      </div>
+      <div class="navbar-center">
+        <span style="color: var(--blue); font-weight: 600;">Blog Editor</span>
+      </div>
+      <div class="navbar-right">
+        <select id="font-size-select" class="theme-select" title="Font Size"></select>
+        <select id="theme-select" class="theme-select"></select>
+        <select id="variant-select" class="theme-select" title="Color Mode"></select>
+        <button id="toggle-mode-btn" class="editor-btn editor-btn-primary">
+          <i class="fa fa-eye"></i> <span id="toggle-mode-text">Preview</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="editor-container">
+      <!-- Edit Mode -->
+      <div id="edit-mode" class="edit-mode">
+        <!-- Action Buttons -->
+        <div class="action-bar">
+          <button id="upload-btn" class="editor-btn">
+            <i class="fa fa-upload"></i> Upload BLOG_*.js
+          </button>
+          <button id="export-btn" class="editor-btn editor-btn-success">
+            <i class="fa fa-download"></i> Export
+          </button>
+          <button id="clear-btn" class="editor-btn editor-btn-danger">
+            <i class="fa fa-trash"></i> Clear
+          </button>
+          <input type="file" id="file-input" accept=".js" style="display: none;">
+        </div>
+
+        <!-- Metadata Section -->
+        <div class="metadata-section">
+          <h2>Blog Metadata</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="title-input">Title *</label>
+              <input type="text" id="title-input" placeholder="Enter blog title" required>
+            </div>
+
+            <div class="form-group">
+              <label for="date-created-input">Date Created *</label>
+              <input type="date" id="date-created-input" required>
+            </div>
+
+            <div class="form-group">
+              <label for="date-updated-input">Date Updated</label>
+              <input type="date" id="date-updated-input">
+            </div>
+
+            <div class="form-group">
+              <label for="read-time-input">Read Time</label>
+              <input type="text" id="read-time-input" placeholder="e.g., 5 min">
+            </div>
+
+            <div class="form-group half-width">
+              <label for="tags-input">Tags (comma-separated)</label>
+              <input type="text" id="tags-input" placeholder="e.g., opinion, tutorial, fun-fact">
+            </div>
+
+            <div class="form-group half-width">
+              <label for="preview-img-input">Preview Image URL</label>
+              <input type="text" id="preview-img-input" placeholder="e.g., https://example.com/image.png">
+            </div>
+
+            <div class="form-group checkbox-group full-width">
+              <label>
+                <input type="checkbox" id="pinned-input">
+                <i class="fa fa-thumb-tack"></i> Pin this post
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-section">
+          <div class="content-header">
+            <h2>Blog Content (Markdown)</h2>
+            <div class="char-count">
+              <span id="char-count">0</span> characters
+            </div>
+          </div>
+          <textarea id="content-textarea" placeholder="Write your blog content in markdown here...
+
+# Heading 1
+## Heading 2
+### Heading 3
+
+Use #TOC to generate a table of contents automatically!
+
+**Bold text**
+*Italic text*
+`inline code`
+
+```javascript
+// Code block
+console.log('Hello World');
+```
+
+[Link text](https://example.com)
+![Image](url){caption, width, height}
+
+- List item 1
+- List item 2
+
+> Blockquote
+
+---"></textarea>
+        </div>
+      </div>
+
+      <!-- Preview Mode -->
+      <div id="preview-mode" class="preview-mode" style="display: none;">
+        <div id="preview-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../prism.js/prism.js"></script>
+  <script src="../themes.js"></script>
+  <script src="../svg-library.js"></script>
+  <script src="../markdown.js"></script>
+  <script src="../website.js"></script>
+  <script src="parser.js"></script>
+  <script src="editor.js"></script>
+</body>
+</html>

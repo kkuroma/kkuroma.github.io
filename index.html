@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Maple+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+Hebrew:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="markdown.css">
+  <link rel="stylesheet" href="website.css">
+</head>
+<body>
+  <div id="app">
+    <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+      <p style="font-size: 2rem; color: var(--text); font-weight: 500;">Loading...</p>
+    </div>
+  </div>
+  <script src="prism.js/prism.js"></script>
+  <script src="themes.js"></script>
+  <script src="svg-library.js"></script>
+  <script src="markdown.js"></script>
+  <script src="website.js"></script>
+  <script src="blog-loader.js"></script>
+  <script src="configs/config.js"></script>
+  <script src="configs/config-projects.js"></script>
+  <script src="configs/config-404.js"></script>
+  <script>
+    async function initApp() {
+      await window.blogLoader.loadAllBlogs();
+      const BLOG_CONFIG = window.blogLoader.generateBlogListingConfig();
+      window.router.register('/', HOME_CONFIG);
+      window.router.register('/projects', PROJECTS_CONFIG);
+      window.router.register('/blog', BLOG_CONFIG);
+      window.router.register('/404', NOT_FOUND_CONFIG);
+      window.router.init();
+    }
+    initApp();
+  </script>
+</body>
+</html>
