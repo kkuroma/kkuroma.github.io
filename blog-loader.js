@@ -43,7 +43,7 @@ class BlogLoader {
       title: blog.title,
       type: "markdown",
       w: 6,
-      h: 2,
+      h: 3,
       image_url: blog.preview_img,
       date: blog.date_created,
       pinned: blog.pinned || false,

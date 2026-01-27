@@ -81,7 +81,7 @@ Anyways, feel free to check around and make yourself at home!`
       w: 4,
       h: 3,
       pinned: false,
-      href: "",
+      href: "#/blog/welcome-to-kuroma-dev",
       image_url: "",
       content: {
         markdown: `
