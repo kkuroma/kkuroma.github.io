@@ -65,7 +65,7 @@ My current personal website featuring a minimal tiling box design.
       },
       tags: ["web-development", "frontend"],
       footer: "2026",
-      href: "https://github.com/kkuroma/homepage"
+      href: "https://github.com/kkuroma/kkuroma.github.io"
     },
     {
       id: "dotfiles",

@@ -67,7 +67,7 @@ I also like to tinker with my **[home server]{color:lavender}**, play the **[pia
         markdown: `
 I made this website as a portfolio, blog, and a place to host my various web services. Heavily inspired by **[hyprland](https://hypr.land)** and **[haruto's website](https://harutohiroki.com)**, this website parses **[markdown-like]{color:blue}** texts into web elements. I hope my website showcases how this minimalist layout could be used to host project sites, blogs, or anything informative.
 
-Learn more about my website **[here](https://github.com/kkuroma/homepage)**, and create your own blogs **[here](./editor/index.html)**.
+Learn more about my website **[here](https://github.com/kkuroma/kkuroma.github.io)**, and create your own blogs **[here](./editor/index.html)**.
 
 Anyways, feel free to check around and make yourself at home!`
       },
