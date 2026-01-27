@@ -9,7 +9,7 @@ const BLOG_CONFIG = {
   pinned: true,
   content: `The **[blog editor](./editor/index.html)** allows you (and me) to easily edit markdowns and publish to a blog or just render markdowns for personal use. This page serves as a comprehensive guide to all markdown+ features available on this site
 
-- [TODO] Stress test various find combinations to find one that break the renderer
+- [TODO] Stress test various markdown combinations to find one that break the renderer
 - [TODO] Add LaTeX support via [latex.js](https://latex.js.org/)
 - [TODO] Add [itty.bitty](https://itty.bitty)-like url-embedded content for easy sharing
 
