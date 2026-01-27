@@ -7,7 +7,7 @@ const BLOG_CONFIG = {
   tags: ["tutorial"],
   preview_img: null,
   pinned: true,
-  content: `The **[blog editor](./editor/index.html)** allows you (and me) to easily edit markdowns and publish to a blog or just render markdowns for personal use. Anyways, this is a comprehensive guide to all markdown+ features available on this site
+  content: `The **[blog editor](./editor/index.html)** allows you (and me) to easily edit markdowns and publish to a blog or just render markdowns for personal use. This page serves as a comprehensive guide to all markdown+ features available on this site
 
 - [TODO] Stress test various find combinations to find one that break the renderer
 - [TODO] Add LaTeX support via [latex.js](https://latex.js.org/)
@@ -19,7 +19,7 @@ const BLOG_CONFIG = {
 
 # Table of contents
 
-Paragraphs whose content is \`#TOC\` indicate where to create a table of content. As you can easily try right above, clicking on each entry will redirect you that entry's position in page. Headers of all sizes will be rendered.
+Paragraphs whose content is \`#TOC\` indicate where to a table of content should be placed (yes, multiple can exist if you choose so). As you can easily try right above, clicking on each entry will redirect you that entry's position in page. Headers of all sizes will be registered to the ToC.
 
 ---
 
@@ -31,7 +31,7 @@ Headers are the easiest way to section your markdown into chapters. Paragraphs s
 
 # Text Formatting
 
-My markdown-like parses supports the following formatting syntax
+My markdown-like parses supports the following formatting syntax:
 
 - \`**BOLD**\` --> enables **BOLD** text
 - \`*italicize*\` --> enables *italicize* text
@@ -46,7 +46,7 @@ My markdown-like parses supports the following formatting syntax
 
 # Lists
 
-Use \`-\` for unordered lists and number \`1.\` \`2.\` \`3.\` for ordered (numbered) lists, for example
+Use \`-\` for unordered lists and number \`1.\` \`2.\` \`3.\` for ordered (numbered) lists, for example:
 \`\`\`
 - Unordered list item
 - Another unordered list item
@@ -72,7 +72,7 @@ renders to
 
 # Code
 
-Surround the backtick symbol (\`) for an in-line code block, or three backtick symbol followed by a programming language name to render a syntax highlighted code block in that language
+Surround the backtick symbol (\`) for an in-line code block, or three backtick symbol followed by a programming language name to render a syntax highlighted code block in that language. I used [prism.js](https://prismjs.com/) for syntax highlighting.
 
 \`\`\`python
 # This is a python code
@@ -94,19 +94,41 @@ function fibonacci(n) {
 
 # Hyperlinks
 
-\`[object](https://example.com)\` creates an [object](https://example.com) that links to \`https://example.com\`. The object isn't limited to text; even SVG icons or images, which I'll show later on, can be a hyperlink.
+\`[object](https://example.com)\` creates an [object](https://example.com) that links to \`https://example.com\`. The object isn't limited to text; even SVG icons or images, which I'll show later on, can contain a hyperlink.
 
 ---
 
 # Blockquotes
 
-> This is a block quote. You can create one by beginning a paragraph with a >. Block quotes can span multiple lines and support \`other\` **types** __of__ ~~styling~~ inside of it
+> This is a block quote. You can create one by beginning a paragraph with a >. Block quotes can span multiple lines and support \`other\` **types** __of__ ~~styling~~ inside of it.
 
 ---
 
 # Sectioning
 
 You may have noticed that sections are separated nicely via horizontal rules. Use \`---\` on an empty paragraph to create a horizontal rule
+
+---
+
+# Tables
+
+My site uses a markdown-like syntax to render tables, that is, pipes (|) dictates the number of column a table should have. Here's an example
+
+\`\`\`md
+|ColumnA|ColumnB|ColumnC|
+|-------|-------|-------| // this row doesn't really matter, I coded it to skip the second row
+|1      |2      |3      |
+|4      |5      |6      |
+|7      |8      |9      |
+\`\`\`
+
+renders to
+
+|ColumnA|ColumnB|ColumnC|
+|-------|-------|-------|
+|1      |2      |3      |
+|4      |5      |6      |
+|7      |8      |9      |
 
 ---
 
@@ -144,7 +166,7 @@ Use this syntax \`![Image](url){caption (optional), width (optional), height (op
 
 ![Image](https://picsum.photos/400/300){A random placeholder image, 400, 300}
 
-And use pipe separator for multiple images:
+And use pipe (|) separator for multiple images:
 
 ![Image](https://picsum.photos/350/300){Left Image, 350, 300} | ![Image](https://picsum.photos/350/300){Right Image, 350, 300}
 
@@ -154,13 +176,13 @@ And use pipe separator for multiple images:
 
 # Iframes
 
-The syntax for Iframes (interactive frame) is identical to that for images \`![Iframe](url){caption (optional), width (optional), height (optional)}\`:
+Iframes (interactive frame) uses identical syntaxes to that of images \`![Iframe](url){caption (optional), width (optional), height (optional)}\`:
 
 ![Iframe](https://kuroma.dev){My website within itself?! Inception!!, 800, 600}
 
 ---
 
-That's everything I have to offer with this site! White I made this markdown editor for myself to more easily write blog, feel free to use it as your online markdown renderer. Happy writing! ![SVG](blog){stroke:var(--blue), 20, 20}`
+That's everything I have to offer with this site! White I made this markdown editor for myself to more easily write blogs, feel free to use it as your online markdown renderer. Happy writing! ![SVG](blog){stroke:var(--blue), 20, 20}`
 };
 window.BLOG_CONFIG = BLOG_CONFIG;
 })();

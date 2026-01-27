@@ -19,7 +19,7 @@ const NOT_FOUND_CONFIG = {
     subtitle: "\"Be subtle, to the point of formlessness\" - Sun Tzu",
     avatar: "https://imgs.search.brave.com/9wS89X8HI8hllr2LRbLSVH0DzqJWOp9deDx8qfDtwAI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS50ZW5vci5jb20v/ZEJLb19IcnFZTkFB/QUFBTS91emF3YS1y/ZWlzYS1ibHVlLWFy/Y2hpdmUuZ2lm.gif",
     backButton: {
-      text: "← Back to Home",
+      text: "← Back Home",
       href: "#/"
     }
   },

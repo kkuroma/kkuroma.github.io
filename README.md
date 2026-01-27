@@ -1,11 +1,12 @@
 # All new kuroma.dev
 
-My current website, featuring a minimal tiling design! Visit [my website](https://kuroma.dev) to see it in action!! Design and functionality inspired by [HarutoHiroki's website](https://harutohiroki.com).
+My current personal website, featuring a minimal tiling design! Visit [my website](https://kuroma.dev) to see it in action!! Design and functionality inspired by [HarutoHiroki's website](https://harutohiroki.com).
 
 ## TODO list:
 
-- Origami collection: I lost a lot of my origami pictures on my old phone. I could recover from the still-working storage, but I've decided to fold all of these models again.
-- Services: a router for my self-hosted services. Right now only `searx.kuroma.dev` has a free-for-all public access
+- Origami collection: I just lost a lot of my origami pictures on my old phone. While I could recover from the still-working storage, I've decided to fold all of these models again cuz why not :^).
+- Services: a router for my self-hosted services. Right now only `searx.kuroma.dev` is a free-for-all public access, so I'd rather wait until I can populate the site with a bit more content
+- Mobile support: man I wish all phones rendered sites like desktop PCs :(
 
 ## How to create websites using my template
 
@@ -13,4 +14,4 @@ Pages are created declaratively to `./configs/*.js`. Blogs are declared in `./bl
 
 ## Imported Libraries/Frameworks
 
-I'm using **NO JAVASCRIPT FRAMEWORKS** for this site, and it should load faster than my old one. Only one library, prism.js (syntax highlighting), is imported for now
+I used **NO JAVASCRIPT FRAMEWORKS** for this site so it should load faster than my old one. Only one library, prism.js (syntax highlighting), was imported for now.
