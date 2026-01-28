@@ -124,7 +124,7 @@ My work to expand my digital empire is never done, and with the necessary horsep
 
 That's it for my long ~~college application essay~~ story. Have fun computing!
 
-P.S. My old laptop now forever serves me as a secondary server.`
+P.S. My old laptop now serves me forever as a secondary server. **[DO NOT]{color:red}** waste tech!`
 
 };
 window.BLOG_CONFIG = BLOG_CONFIG;
