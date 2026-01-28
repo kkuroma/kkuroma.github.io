@@ -122,7 +122,10 @@ My work to expand my digital empire is never done, and with the necessary horsep
 3. **[If you wanted to start something, do it now before it's too late.]{color:mauve}** Don't build a PC now though, unless you have the funding.
 4. **[Very important!!]{color:red}** [Stress test your new hardware, and don't wipe the wrong SSD]{rainbow}
 
-That's it for my long ~~college application essay~~ story. Have fun computing!`
+That's it for my long ~~college application essay~~ story. Have fun computing!
+
+P.S. My old laptop now forever serves me as a secondary server.`
+
 };
 window.BLOG_CONFIG = BLOG_CONFIG;
 })();
