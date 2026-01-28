@@ -4,6 +4,7 @@ class BlogLoader {
     this.blogFiles = [
       'BLOG_welcome-to-kuroma-dev',
       'BLOG_markdown-editor-tutorial',
+      'BLOG_my-2025-tech-journey',
     ];
   }
 
