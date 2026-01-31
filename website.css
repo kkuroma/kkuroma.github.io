@@ -362,7 +362,6 @@ body {
 
 .box:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
   border-color: var(--blue);
 }
 
@@ -373,7 +372,7 @@ body {
 }
 
 .box-pinned:hover {
-  border-color: var(--yellow);
+  border-color: var(--red);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 

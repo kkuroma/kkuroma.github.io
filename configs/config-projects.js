@@ -149,7 +149,7 @@ An installer script for my developer desktop experience on Arch and Hyprland
 
 A quick personal project where I experimented with various types of GANs to generate anime faces at \"high\" (at the time) resolutions`
       },
-      tags: ["research", "biomedical", "signals"],
+      tags: ["computer-vision"],
       footer: "2021",
       href: "https://github.com/kkuroma/GANime"
     },
