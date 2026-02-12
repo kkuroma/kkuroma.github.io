@@ -13,7 +13,6 @@ class BlogEditor {
       title: '',
       date_created: '',
       date_updated: null,
-      read_time: '',
       tags: [],
       preview_img: null,
       pinned: false
@@ -298,7 +297,7 @@ class BlogEditor {
       ? ` · Updated ${new Date(this.metadata.date_updated).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
       : '';
 
-    const readTime = this.metadata.read_time || 'Unknown';
+    const readTime = this.calculateReadingTime(this.content);
 
     return `${date}${updated} · ${readTime} read`;
   }
@@ -316,7 +315,9 @@ class BlogEditor {
       ? ` (Updated ${new Date(this.metadata.date_updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })})`
       : '';
 
-    return `${date}${updated} · ${this.metadata.read_time || 'Unknown'} read`;
+    const readTime = this.calculateReadingTime(this.content);
+
+    return `${date}${updated} · ${readTime} read`;
   }
 
   collectMetadata() {
@@ -324,12 +325,19 @@ class BlogEditor {
     this.metadata.date_created = document.getElementById('date-created-input').value;
     const dateUpdated = document.getElementById('date-updated-input').value;
     this.metadata.date_updated = dateUpdated || null;
-    this.metadata.read_time = document.getElementById('read-time-input').value || '5 min';
     const tagsStr = document.getElementById('tags-input').value;
     this.metadata.tags = BlogParser.parseTags(tagsStr);
     const previewImg = document.getElementById('preview-img-input').value;
     this.metadata.preview_img = previewImg || null;
     this.metadata.pinned = document.getElementById('pinned-input').checked;
+  }
+
+  calculateReadingTime(markdownContent) {
+    const words = markdownContent.split(/\s+/).filter(word => word.trim().length > 0);
+    const wordCount = words.length;
+    const WPM = 250;
+    const readTime = Math.ceil(wordCount / WPM);
+    return `${readTime} min`;
   }
 
   handleFileUpload(event) {
@@ -372,7 +380,6 @@ class BlogEditor {
     document.getElementById('title-input').value = config.title || '';
     document.getElementById('date-created-input').value = config.date_created || '';
     document.getElementById('date-updated-input').value = config.date_updated || '';
-    document.getElementById('read-time-input').value = config.read_time || '5 min';
     document.getElementById('tags-input').value = BlogParser.formatTags(config.tags || []);
     document.getElementById('preview-img-input').value = config.preview_img || '';
     document.getElementById('pinned-input').checked = config.pinned || false;
@@ -427,7 +434,6 @@ class BlogEditor {
     // Clear all fields
     document.getElementById('title-input').value = '';
     document.getElementById('date-updated-input').value = '';
-    document.getElementById('read-time-input').value = '';
     document.getElementById('tags-input').value = '';
     document.getElementById('preview-img-input').value = '';
     document.getElementById('pinned-input').checked = false;

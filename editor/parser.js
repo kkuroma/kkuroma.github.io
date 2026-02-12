@@ -47,6 +47,12 @@ class BlogParser {
       .replace(/`/g, '\\`')
       .replace(/\$/g, '\\$');
 
+    // Calculate reading time dynamically
+    const words = content.split(/\s+/).filter(word => word.trim().length > 0);
+    const wordCount = words.length;
+    const WPM = 250;
+    const readTime = Math.ceil(wordCount / WPM);
+
     // Format tags array
     const tagsStr = metadata.tags && metadata.tags.length > 0
       ? `["${metadata.tags.join('", "')}"]`
@@ -54,19 +60,18 @@ class BlogParser {
 
     // Build the file content
     const fileContent = `(function() {
-const BLOG_CONFIG = {
-  title: "${metadata.title || 'Untitled'}",
-  date_created: "${metadata.date_created || new Date().toISOString().split('T')[0]}",
-  date_updated: ${metadata.date_updated ? `"${metadata.date_updated}"` : 'null'},
-  read_time: "${metadata.read_time || '5 min'}",
-  tags: ${tagsStr},
-  preview_img: ${metadata.preview_img ? `"${metadata.preview_img}"` : 'null'},
-  pinned: ${metadata.pinned || false},
-  content: \`${escapedContent}\`
-};
-window.BLOG_CONFIG = BLOG_CONFIG;
-})();
-`;
+ const BLOG_CONFIG = {
+   title: "${metadata.title || 'Untitled'}",
+   date_created: "${metadata.date_created || new Date().toISOString().split('T')[0]}",
+   date_updated: ${metadata.date_updated ? `"${metadata.date_updated}"` : 'null'},
+   tags: ${tagsStr},
+   preview_img: ${metadata.preview_img ? `"${metadata.preview_img}"` : 'null'},
+   pinned: ${metadata.pinned || false},
+   content: \`${escapedContent}\`
+ };
+ window.BLOG_CONFIG = BLOG_CONFIG;
+ })();
+ `;
 
     return fileContent;
   }
