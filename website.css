@@ -17,6 +17,12 @@ body {
   position: sticky; top: 0.75rem; z-index: 1000; border-radius: 9999px;
   margin: 0 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+.navbar-cover {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: calc(0.75rem + 1.5rem + 0.75rem);
+  background-color: var(--base);
+  z-index: 999;
+}
 .navbar-left { display: flex; align-items: center; gap: 1.5rem; position: relative; flex: 1; }
 .navbar-left a { color: var(--text); text-decoration: none; font-weight: 500; transition: color 0.2s; }
 .navbar-left a:hover, .navbar-left a.active { color: var(--blue); }

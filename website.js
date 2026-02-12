@@ -240,7 +240,10 @@ class WebsiteGenerator {
   render() {
     const app = document.getElementById('app');
     app.innerHTML = '';
-    app.appendChild(this.renderNavbar());
+
+    const navbar = this.renderNavbar();
+    app.appendChild(navbar);
+
     if (this.config.header) {
       app.appendChild(this.renderHeader());
     }
@@ -411,6 +414,10 @@ class WebsiteGenerator {
     rightDiv.appendChild(variantSelect);
 
     nav.appendChild(rightDiv);
+
+    const navbarCover = document.createElement('div');
+    navbarCover.className = 'navbar-cover';
+    navbar.appendChild(navbarCover);
 
     return nav;
   }
