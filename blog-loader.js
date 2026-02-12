@@ -114,6 +114,15 @@ class BlogLoader {
     };
   }
 
+  // Helper: calculate reading time from markdown content
+  calculateReadingTime(markdownContent) {
+    const words = markdownContent.split(/\s+/).filter(word => word.trim().length > 0);
+    const wordCount = words.length;
+    const WPM = 250;
+    const readTime = Math.ceil(wordCount / WPM);
+    return `${readTime} min`;
+  }
+
   // Helper: format date with options
   formatDate(dateStr, options) {
     return new Date(dateStr).toLocaleDateString('en-US', options);
@@ -129,14 +138,14 @@ class BlogLoader {
     const updated = blog.date_updated
       ? ` ${longFormat ? '·' : '('}Updated ${this.formatDate(blog.date_updated, { year: 'numeric', month: 'short', day: 'numeric' })}${longFormat ? '' : ')'}`
       : '';
-    const readTime = includeTime ? ` · ${blog.read_time} read` : '';
+    const readTime = includeTime ? ` · ${this.calculateReadingTime(blog.content)} read` : '';
 
     return `${date}${updated}${readTime}`;
   }
 
   generatePreviewMarkdown(blog) {
     const preview = blog.content.split('\n\n').slice(0, 1).join('\n\n');
-    return `${preview}\n\n**Read time:** ${blog.read_time}`;
+    return `${preview}\n\n**Read time:** ${this.calculateReadingTime(blog.content)}`;
   }
 
   generateFooter(blog) {

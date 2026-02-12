@@ -271,7 +271,7 @@ class WebsiteGenerator {
     const leftNav = document.createElement('div');
     leftNav.className = 'navbar-left';
 
-    if (mode === 'small') {
+    if (mode === 'small' || mode === 'medium') {
       // Hamburger menu
       const hamburger = document.createElement('button');
       hamburger.className = 'hamburger';

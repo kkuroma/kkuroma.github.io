@@ -3,7 +3,6 @@ const BLOG_CONFIG = {
   title: "Markdown Editor Tutorial",
   date_created: "2026-01-27",
   date_updated: null,
-  read_time: "15 min",
   tags: ["tutorial"],
   preview_img: null,
   pinned: true,
