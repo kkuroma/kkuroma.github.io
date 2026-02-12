@@ -3,6 +3,7 @@ const BLOG_CONFIG = {
   title: "My 2025 Tech Journey",
   date_created: "2026-01-27",
   date_updated: null,
+  read_time: "15 min",
   tags: ["personal", "story", "hardware", "linux"],
   preview_img: null,
   pinned: false,

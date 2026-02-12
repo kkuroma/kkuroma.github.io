@@ -3,6 +3,7 @@ const BLOG_CONFIG = {
   title: "Discord's Beginning of an End",
   date_created: "2026-02-10",
   date_updated: null,
+  read_time: "15 min",
   tags: ["opinion", "rant"],
   preview_img: null,
   pinned: false,

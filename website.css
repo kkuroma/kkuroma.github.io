@@ -86,7 +86,7 @@ body {
 
 /* Boxes Container */
 .boxes-container, .boxes-container-blog { flex: 1; display: grid; gap: 1rem; padding: 2rem; }
-  .boxes-container-blog { grid-auto-rows: auto; max-width: 1000px; margin: 0 auto; }
+.boxes-container-blog { grid-auto-rows: auto; }
 
 @media (max-width: 767px) {
   .boxes-container, .boxes-container-blog { grid-template-columns: repeat(4, 1fr); }
