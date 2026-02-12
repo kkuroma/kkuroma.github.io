@@ -240,10 +240,7 @@ class WebsiteGenerator {
   render() {
     const app = document.getElementById('app');
     app.innerHTML = '';
-
-    const navbar = this.renderNavbar();
-    app.appendChild(navbar);
-
+    app.appendChild(this.renderNavbar());
     if (this.config.header) {
       app.appendChild(this.renderHeader());
     }
@@ -274,7 +271,7 @@ class WebsiteGenerator {
     const leftNav = document.createElement('div');
     leftNav.className = 'navbar-left';
 
-    if (mode === 'small') {
+    if (mode === 'small' || mode === 'medium') {
       // Hamburger menu
       const hamburger = document.createElement('button');
       hamburger.className = 'hamburger';
@@ -414,10 +411,6 @@ class WebsiteGenerator {
     rightDiv.appendChild(variantSelect);
 
     nav.appendChild(rightDiv);
-
-    const navbarCover = document.createElement('div');
-    navbarCover.className = 'navbar-cover';
-    navbar.appendChild(navbarCover);
 
     return nav;
   }

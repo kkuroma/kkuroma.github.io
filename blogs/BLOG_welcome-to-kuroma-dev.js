@@ -3,7 +3,6 @@ const BLOG_CONFIG = {
   title: "Welcome to kuroma.dev",
   date_created: "2026-01-27",
   date_updated: null,
-  read_time: "5 min",
   tags: ["personal"],
   preview_img: null,
   pinned: true,
