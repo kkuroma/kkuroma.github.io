@@ -1,0 +1,52 @@
+██╗  ██╗██╗   ██╗██████╗  ██████╗ ███╗   ███╗ █████╗    ██████╗ ███████╗██╗   ██╗
+██║ ██╔╝██║   ██║██╔══██╗██╔═══██╗████╗ ████║██╔══██╗   ██╔══██╗██╔════╝██║   ██║
+█████╔╝ ██║   ██║██████╔╝██║   ██║██╔████╔██║███████║   ██║  ██║█████╗  ██║   ██║
+██╔═██╗ ██║   ██║██╔══██╗██║   ██║██║╚██╔╝██║██╔══██║   ██║  ██║██╔══╝  ╚██╗ ██╔╝
+██║  ██╗╚██████╔╝██║  ██║╚██████╔╝██║ ╚═╝ ██║██║  ██║██╗██████╔╝███████╗ ╚████╔╝ 
+╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝  ╚═══╝ 
+
+kuroma.dev is the personal website of KK Thuwajit, also known as KKuroma online
+This file contains an abridged version of my long introduction found on the site.
+
+...- .- -. .. - .- ... / ...- .- -. .. - .- - ..- --
+
+# PEOPLE
+@kkuroma
+
+...- .- -. .. - .- ... / ...- .- -. .. - .- - ..- --
+
+# TECHNICAL
+URL: https://kuroma.dev
+Build: Pure HTML/CSS/JS (for now)
+
+...- .- -. .. - .- ... / ...- .- -. .. - .- - ..- --
+
+# PERSONAL
+Name: KK Thuwajit
+Alias: KKuroma
+Location: Madison, Wisconsin
+Preferred Languages: EN, TH
+
+...- .- -. .. - .- ... / ...- .- -. .. - .- - ..- --
+
+# EDUCATION
+BSc: University of Wisconsin-Madison (CS and Math)
+
+...- .- -. .. - .- ... / ...- .- -. .. - .- - ..- --
+
+# PROFESSIONAL
+Profession: Data Scientist, AI Engineer
+
+...- .- -. .. - .- ... / ...- .- -. .. - .- - ..- --
+
+# SOCIAL
+github: https://github.com/kkuroma
+linkedin: https://linkedin.com/in/kkuroma
+email: contact@kuroma.dev
+
+...- .- -. .. - .- ... / ...- .- -. .. - .- - ..- --
+
+# COMMENTS
+I am hosting this site to mark my, a human's, presence in the age of bot-controlled internet
+Amidst the decline of authentic identities in the online world, I hope to remain true to myself with a site that updates with my present status.
+This is a site made by a human for humans!
