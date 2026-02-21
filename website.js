@@ -239,14 +239,7 @@ class WebsiteGenerator {
     });
   }
 
-  async render() {
-    // Lazy-load KaTeX if any content contains $
-    const allText = [
-      this.config.navbar?.centerText || '',
-      ...this.config.boxes.map(b => b.content?.markdown || b.content?.code || '')
-    ].join('\n');
-    await MarkdownParser.loadKatexIfNeeded(allText);
-
+  render() {
     const app = document.getElementById('app');
     app.innerHTML = '';
     app.appendChild(this.renderNavbar());
@@ -262,6 +255,21 @@ class WebsiteGenerator {
       app.appendChild(this.renderFooter());
     }
     app.appendChild(this.renderBackToTop());
+
+    // Lazy-load KaTeX if any content contains $, then re-render so math displays
+    if (!MarkdownParser._katexLoaded) {
+      const allText = [
+        this.config.navbar?.centerText || '',
+        ...this.config.boxes.map(b => b.content?.markdown || b.content?.code || '')
+      ].join('\n');
+      if (allText.includes('$')) {
+        MarkdownParser.loadKatexIfNeeded(allText).then(() => {
+          if (MarkdownParser._katexLoaded) {
+            this.reRenderContent();
+          }
+        });
+      }
+    }
   }
 
   reRenderContent() {
