@@ -171,17 +171,27 @@ class MarkdownParser {
       });
     }
 
-    // Extract $$...$$ math blocks from text parts
+    // Extract $$...$$ math blocks from text parts, but skip $$ inside inline code (`...`)
     const expandedParts = [];
     for (const part of parts) {
       if (part.type !== 'text') {
         expandedParts.push(part);
         continue;
       }
+      // Find all inline code spans so we can skip $$ inside them
+      const inlineCodeRanges = [];
+      const icRegex = /`[^`]+`/g;
+      let icMatch;
+      while ((icMatch = icRegex.exec(part.content)) !== null) {
+        inlineCodeRanges.push({ start: icMatch.index, end: icMatch.index + icMatch[0].length });
+      }
+      const isInsideInlineCode = (idx) => inlineCodeRanges.some(r => idx >= r.start && idx < r.end);
+
       const mathBlockRegex = /\$\$([\s\S]+?)\$\$/g;
       let mLastIndex = 0;
       let mMatch;
       while ((mMatch = mathBlockRegex.exec(part.content)) !== null) {
+        if (isInsideInlineCode(mMatch.index)) continue;
         if (mMatch.index > mLastIndex) {
           expandedParts.push({ type: 'text', content: part.content.substring(mLastIndex, mMatch.index) });
         }
@@ -283,7 +293,9 @@ class MarkdownParser {
         for (const seg of segments) {
           if (seg.type === 'inline_code') {
             // Convert code to HTML <code> tag
-            rendered += `<code>${this.escapeHtml(seg.content)}</code>`;
+            // Content was already sanitized (HTML entities), unescape first then re-escape
+            // so that e.g. < shows as < not &lt;
+            rendered += `<code>${this.escapeHtml(this.unescapeHtml(seg.content))}</code>`;
           } else {
             // Apply markdown rendering to text segments (images, SVGs, iframes, hyperlinks, bold, italic, etc.)
             rendered += this.processInline(seg.content);
@@ -306,6 +318,8 @@ class MarkdownParser {
 
   /* Render code block */
   renderCodeBlock(code, language) {
+    // Unescape HTML entities from initial sanitization so that e.g. < shows as <
+    code = this.unescapeHtml(code);
     const highlightedCode = this.highlightCode(code.trim(), language);
     const langClass = language ? `language-${language}` : '';
     return `<pre><code class="${langClass}">${highlightedCode}</code></pre>\n`;
@@ -332,7 +346,6 @@ class MarkdownParser {
 
   /* Render paragraph with markdown processing */
   renderParagraph(text, hasInlineHtml = false) {
-    console.log(text);
     text = text.trim();
     if (!text) return '';
 
@@ -417,17 +430,19 @@ class MarkdownParser {
       return `$${math}$`;
     });
 
-    // Colors
+    // Colors (process inner content with processInline so [**text**]{color:x} works)
     result = result.replace(/\[([^\]]+)\]\{color:(\w+)\}/g, (_, content, colorName) => {
       if (!/^[a-z0-9]+$/i.test(colorName)) return content;
+      const inner = this.processInline(content);
       if (this.colors && this.colors[colorName]) {
-        return `<span style="color: var(--${colorName})">${content}</span>`;
+        return `<span style="color: var(--${colorName})">${inner}</span>`;
       }
-      return `<span style="color: ${colorName}">${content}</span>`;
+      return `<span style="color: ${colorName}">${inner}</span>`;
     });
 
     result = result.replace(/\[([^\]]+)\]\{hex:(#[a-fA-F0-9]{6}|#[a-fA-F0-9]{3})\}/g, (_, content, hex) => {
-      return `<span style="color: ${hex}">${content}</span>`;
+      const inner = this.processInline(content);
+      return `<span style="color: ${hex}">${inner}</span>`;
     });
 
     result = result.replace(/\[([^\]]+)\]\{rainbow\}/g, (_, content) => {
@@ -694,7 +709,7 @@ class MarkdownParser {
         inCodeBlock = !inCodeBlock;
         continue;
       }
-      console.log(line)
+
 
       // Skip lines inside code blocks
       if (inCodeBlock) continue;
