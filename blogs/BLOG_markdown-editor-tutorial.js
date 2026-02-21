@@ -1,16 +1,16 @@
 (function() {
-const BLOG_CONFIG = {
-  title: "Markdown Editor Tutorial",
-  date_created: "2026-01-27",
-  date_updated: null,
-  tags: ["tutorial"],
-  preview_img: null,
-  pinned: true,
-  content: `The **[blog editor](./editor/index.html)** allows you (and me) to easily edit markdowns and publish to a blog or just render markdowns for personal use. This page serves as a comprehensive guide to all markdown+ features available on this site
+ const BLOG_CONFIG = {
+   title: "Markdown Editor Tutorial",
+   date_created: "2026-01-27",
+   date_updated: "2026-02-22",
+   tags: ["tutorial"],
+   preview_img: null,
+   pinned: true,
+   content: `The **[blog editor](./editor/index.html)** allows you (and me) to easily edit markdowns and publish to a blog or just render markdowns for personal use. This page serves as a comprehensive guide to all markdown+ features available on this site
 
-- [TODO] Stress test various markdown combinations to find one that break the renderer
-- [TODO] Add LaTeX support via [latex.js](https://latex.js.org/)
-- [TODO] Add [itty.bitty](https://itty.bitty)-like url-embedded content for easy sharing
+- ![SVG](check) Stress tested various markdown combinations to find one that breaks the renderer
+- ![SVG](check) Added LaTeX support via [katex](https://katex.org/docs/browser.html)
+- [TODO] I might add [itty.bitty](https://itty.bitty)-like url-embedded content for easy sharing (security concerns)
 
 #TOC
 
@@ -40,6 +40,29 @@ My markdown-like parses supports the following formatting syntax:
   - \`[text]{color:your_color}\` --> renders \`text\` in \`your_color\`, supports [red]{color:red}, [maroon]{color:maroon}, [peach]{color:peach}, [yellow]{color:yellow}, [green]{color:green}, [teal]{color:teal}, [sky]{color:sky}, [sapphire]{color:sapphire}, [blue]{color:blue}, [lavender]{color:lavender}, [mauve]{color:mauve}, [pink]{color:pink}, [flamingo]{color:flamingo}, [rosewater]{color:rosewater}
   - \`[text]{hex:your_hex_color}\` --> renders \`text\` in \`your_hex_color\` (i.e. [#ffffff]{hex:#ffffff})
   - \`[rainbow_text]{rаinbow}\` --> renders [rainbow_text]{rainbow}!!!
+
+---
+
+# Mathematical Expressions
+
+The site now supports using KaTeX to render mathematical expressions. Text wrapped in the a single dollar sign (\`\$\`) will be treated as an in-line mathematical expression. For example:
+
+- **[Basic equations]{color:blue}**: \`\$1+1=2\$\` --> \$1+1=2\$
+- **[Superscripts and subscripts]{color:blue}**: \`\$x_1=2^2=4\$\` --> \$x_1=2^2=4\$
+- **[Integration and summations]{color:blue}**: \`\$\\sum_{i=1}^n \\int_{0}^{1} x^i dx\$\` --> \$\\sum_{i=1}^n \\int_{0}^{1} x^i dx\$
+- **[Greek alphabets]{color:blue}**: \`\$\\rho\\iota\\eta\\epsilon\\alpha\\rho\\rho\\iota\\epsilon\$\` --> \$\\rho\\iota\\eta\\epsilon\\alpha\\rho\\rho\\iota\\epsilon\$
+
+Text wrapped in the two dollar signs will be treated as a mathematical expression rendered in its own paragraph. For example, 
+
+\`\`\`latex
+\$\$\\lim_{x \\to a} f(x) = L \\iff \\forall \\epsilon > 0, \\exists \\delta > 0 \\text{ such that } 0 < |x - a| < \\delta \\implies |f(x) - L| < \\epsilon\$\$
+\`\`\`
+
+is rendered to
+
+\$\$\\lim_{x \\to a} f(x) = L \\iff \\forall \\epsilon > 0, \\exists \\delta > 0 \\text{ such that } 0 < |x - a| < \\delta \\implies |f(x) - L| < \\epsilon\$\$
+
+If KaTeX supports it, my site (very likely) will support it.
 
 ---
 
@@ -182,6 +205,7 @@ Iframes (interactive frame) uses identical syntaxes to that of images \`![Iframe
 ---
 
 That's everything I have to offer with this site! White I made this markdown editor for myself to more easily write blogs, feel free to use it as your online markdown renderer. Happy writing! ![SVG](blog){stroke:var(--blue), 20, 20}`
-};
-window.BLOG_CONFIG = BLOG_CONFIG;
-})();
+ };
+ window.BLOG_CONFIG = BLOG_CONFIG;
+ })();
+ 

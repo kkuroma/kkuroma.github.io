@@ -101,7 +101,7 @@ As of 2026, I am currently working on **[medical image registration]{color:blue}
       href: "",
       image_url: "",
       content: {
-        markdown: "**![SVG](star){fill:var(--blue), stroke:var(--blue)} [News!]{color:blue}** this is where news or announcements typically go. Stay tuned for updates!"
+        markdown: "**![SVG](star){fill:var(--blue), stroke:var(--blue)} [News!]{color:blue}** the blog editor now supports minimal LaTeX expressions!"
       },
       tags: ["News"],
       footer: "@kkuroma"
