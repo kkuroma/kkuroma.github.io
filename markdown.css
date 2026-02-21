@@ -1,9 +1,10 @@
 /* Markdown output styles - apply 'markdown-content' class to container */
 
 /* Headings */
+.markdown-content h1, .markdown-content h2, .markdown-content h3 { font-weight: 600; }
 .markdown-content h1 { font-size: 2rem; margin: 1.5rem 0 1rem; color: var(--blue); font-weight: 700; }
-.markdown-content h2 { font-size: 1.5rem; margin: 1.25rem 0 0.75rem; color: var(--lavender); font-weight: 600; }
-.markdown-content h3 { font-size: 1.25rem; margin: 1rem 0 0.5rem; color: var(--mauve); font-weight: 600; }
+.markdown-content h2 { font-size: 1.5rem; margin: 1.25rem 0 0.75rem; color: var(--lavender); }
+.markdown-content h3 { font-size: 1.25rem; margin: 1rem 0 0.5rem; color: var(--mauve); }
 
 /* Text */
 .markdown-content p { margin: 0.75rem 0; }
@@ -38,10 +39,8 @@
 .markdown-content tr:nth-child(even) { background: var(--crust); }
 .markdown-content tr:hover { background: var(--surface0); }
 
-/* SVGs */
+/* SVGs & Images */
 .markdown-content svg { display: inline-block; vertical-align: middle; color: var(--text); }
-
-/* Images */
 .markdown-content img { max-width: 100%; height: auto; border-radius: 4px; margin: 1rem auto; display: block; }
 .markdown-content figure { margin: 1rem 0; text-align: center; }
 .markdown-content figcaption { margin-top: 0.5rem; font-size: 0.875rem; color: var(--subtext0); font-style: italic; }
@@ -50,6 +49,9 @@
 .markdown-content .image-row { display: flex; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
 .markdown-content .image-row-item { flex: 0 0 auto; margin: 0; text-align: center; }
 .markdown-content .image-row-item img { margin: 0 auto; }
+
+/* Math (KaTeX) */
+.markdown-content .katex-display { text-align: center; margin: 1rem 0; overflow-x: auto; }
 
 /* Iframes */
 .markdown-content iframe { width: 100%; aspect-ratio: 16/9; border: 1px solid var(--overlay0); border-radius: 4px; margin: 1rem 0; }
@@ -69,7 +71,8 @@
 
 /* Rainbow animation */
 .markdown-content .rainbow-text { display: inline; }
-.markdown-content .rainbow-char { display: inline-block; animation: rainbow 3s ease-in-out infinite; animation-delay: var(--rainbow-delay, 0s); }
+.markdown-content .rainbow-word { display: inline-block; white-space: nowrap; }
+.markdown-content .rainbow-char { display: inline-block; color: var(--red); animation: rainbow 3s ease-in-out infinite; animation-delay: var(--rainbow-delay, 0s); }
 @keyframes rainbow {
   0%, 100% { color: var(--red); }
   14% { color: var(--yellow); }

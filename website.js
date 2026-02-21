@@ -134,6 +134,8 @@ class WebsiteGenerator {
       if (newMode !== this.currentMode) {
         this.currentMode = newMode;
         this.render();
+      } else {
+        this.updateGridRowHeight();
       }
     });
     // handle system theme
@@ -248,6 +250,7 @@ class WebsiteGenerator {
       app.appendChild(this.renderSelectionArea());
     }
     app.appendChild(this.renderBoxes());
+    this.updateGridRowHeight();
     if (this.config.footer) {
       app.appendChild(this.renderFooter());
     }
@@ -260,6 +263,7 @@ class WebsiteGenerator {
     if (wrapper) {
       const newBoxes = this.renderBoxes();
       wrapper.replaceWith(newBoxes);
+      this.updateGridRowHeight();
     }
   }
 
@@ -713,6 +717,16 @@ class WebsiteGenerator {
     return value;
   }
 
+  updateGridRowHeight() {
+    const container = document.querySelector('.boxes-container');
+    if (!container) return;
+    const columns = this.getColumns();
+    const containerWidth = container.clientWidth;
+    const gap = parseFloat(getComputedStyle(container).gap) || 16;
+    const columnWidth = (containerWidth - (columns - 1) * gap) / columns;
+    container.style.gridAutoRows = `${columnWidth}px`;
+  }
+
   findPosition(grid, width, height) {
     for (let row = 0; row < grid.length - height; row++) {
       for (let col = 0; col <= grid[0].length - width; col++) {
@@ -762,7 +776,7 @@ class WebsiteGenerator {
 
     // Make box clickable if href provided
     if (box.href) {
-      boxEl.style.cursor = 'pointer';
+      boxEl.classList.add('box-has-link');
       boxEl.addEventListener('click', (e) => {
         if (e.target.tagName !== 'A') {
           box.href.startsWith('#')
@@ -770,6 +784,8 @@ class WebsiteGenerator {
             : window.open(box.href, '_blank');
         }
       });
+    } else {
+      boxEl.classList.add('box-no-link');
     }
 
     // Render header with title and optional pinned label
