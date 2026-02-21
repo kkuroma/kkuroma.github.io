@@ -49,7 +49,7 @@ My name is **[KK Thuwajit]{color:yellow}**, but you might know me online as **[K
 
 I recently graduated with a CS and math degree from **[UW Madison]{color:red}**, and my primary research interest lies in **[biomedical data sciences]{color:mauve}**.
 
-I also like to tinker with my **[home server]{color:lavender}**, play the **[piano]{color:blue}**, and design **[origami]{color:cyan}** models.`
+I also like to tinker with my **[home server]{color:lavender}**, play the **[piano]{color:blue}**, and design **[origami]{color:teal}** models.`
 
       },
       tags: ["Important"],

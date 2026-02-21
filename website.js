@@ -932,7 +932,7 @@ class WebsiteGenerator {
     const button = document.createElement('button');
     button.className = 'back-to-top';
     button.id = 'back-to-top';
-    button.innerHTML = '<i class="fa fa-arrow-up"></i>';
+    button.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
     button.setAttribute('aria-label', 'Back to top');
     button.title = 'Back to top';
     button.onclick = () => {

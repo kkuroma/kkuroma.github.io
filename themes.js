@@ -295,6 +295,75 @@ const THEMES = {
     }
   },
 
+  grayscale: {
+    light: {
+      base: '#f5f5f5',
+      mantle: '#ececec',
+      crust: '#e3e3e3',
+
+      text: '#1a1a1a',
+      subtext1: '#2f2f2f',
+      subtext0: '#444444',
+
+      surface2: '#c2c2c2',
+      surface1: '#cecece',
+      surface0: '#dadada',
+
+      overlay2: '#8a8a8a',
+      overlay1: '#999999',
+      overlay0: '#a8a8a8',
+
+      red: '#5f5f5f',
+      maroon: '#4d4d4d',
+      peach: '#737373',
+      yellow: '#7f7f7f',
+      green: '#494949',
+      teal: '#595959',
+      sky: '#696969',
+      sapphire: '#4b4b4b',
+      blue: '#535353',
+      lavender: '#636363',
+      mauve: '#474747',
+      pink: '#6d6d6d',
+
+      flamingo: '#676767',
+      rosewater: '#797979'
+    },
+    dark: {
+      base: '#1c1c1c',
+      mantle: '#141414',
+      crust: '#0c0c0c',
+
+      text: '#e8e8e8',
+      subtext1: '#d1d1d1',
+      subtext0: '#bababa',
+
+      surface2: '#3c3c3c',
+      surface1: '#2e2e2e',
+      surface0: '#242424',
+
+      overlay2: '#7a7a7a',
+      overlay1: '#686868',
+      overlay0: '#565656',
+
+      red: '#c9c9c9',
+      maroon: '#b3b3b3',
+      peach: '#d9d9d9',
+      yellow: '#e5e5e5',
+      green: '#a5a5a5',
+      teal: '#8b8b8b',
+      sky: '#c1c1c1',
+      sapphire: '#939393',
+      blue: '#9d9d9d',
+      lavender: '#b5b5b5',
+      mauve: '#838383',
+      pink: '#d5d5d5',
+
+      flamingo: '#cbcbcb',
+      rosewater: '#dfdfdf'
+    }
+  },
+
   dracula: {
     light: {
       // Dracula Light (custom light variant)
