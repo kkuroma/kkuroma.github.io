@@ -364,6 +364,77 @@ const THEMES = {
     }
   },
 
+  monokai: {
+    light: {
+      // Monokai-inspired light
+      base: '#fafaf8',
+      mantle: '#f0f0ea',
+      crust: '#e6e6e0',
+
+      text: '#272822',
+      subtext1: '#3d3d35',
+      subtext0: '#555550',
+
+      surface2: '#c5c5bc',
+      surface1: '#d4d4ca',
+      surface0: '#e2e2d8',
+
+      overlay2: '#888880',
+      overlay1: '#979790',
+      overlay0: '#a8a89e',
+
+      red: '#d4154e',
+      maroon: '#a81040',
+      peach: '#c86800',
+      yellow: '#8a7700',
+      green: '#618a12',
+      teal: '#2090a0',
+      sky: '#2898b0',
+      sapphire: '#1878a0',
+      blue: '#4050a8',
+      lavender: '#6845d0',
+      mauve: '#7040c0',
+      pink: '#c81848',
+
+      flamingo: '#c06000',
+      rosewater: '#d81050'
+    },
+    dark: {
+      // Classic Monokai
+      base: '#272822',
+      mantle: '#1e1f1c',
+      crust: '#15161a',
+
+      text: '#f8f8f2',
+      subtext1: '#e2e2d5',
+      subtext0: '#c8c8bb',
+
+      surface2: '#49483e',
+      surface1: '#3e3d32',
+      surface0: '#33332a',
+
+      overlay2: '#75715e',
+      overlay1: '#8a8772',
+      overlay0: '#9e9c86',
+
+      red: '#f92672',
+      maroon: '#cc3366',
+      peach: '#fd971f',
+      yellow: '#e6db74',
+      green: '#a6e22e',
+      teal: '#66d9e8',
+      sky: '#66d9e8',
+      sapphire: '#4db8cc',
+      blue: '#7b86d0',
+      lavender: '#ae81ff',
+      mauve: '#ae81ff',
+      pink: '#f92672',
+
+      flamingo: '#fd971f',
+      rosewater: '#f9c8d8'
+    }
+  },
+
   dracula: {
     light: {
       // Dracula Light (custom light variant)
