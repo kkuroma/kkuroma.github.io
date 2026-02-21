@@ -50,6 +50,9 @@
 .markdown-content .image-row-item { flex: 0 0 auto; margin: 0; text-align: center; }
 .markdown-content .image-row-item img { margin: 0 auto; }
 
+/* Math (KaTeX) */
+.markdown-content .katex-display { text-align: center; margin: 1rem 0; overflow-x: auto; }
+
 /* Iframes */
 .markdown-content iframe { width: 100%; aspect-ratio: 16/9; border: 1px solid var(--overlay0); border-radius: 4px; margin: 1rem 0; }
 

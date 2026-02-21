@@ -26,6 +26,8 @@
  * | Col1 | Col2 | - table
  * ![SVG](name){color1:value1, color2:value2, width, height} - SVG icons
  * #TOC - table of contents
+ * $$math$$ - block math (KaTeX display mode, own paragraph)
+ * $math$ - inline math (KaTeX inline mode)
  *
  * Logic:
  * 1. Sanitize ALL text first (security)
@@ -112,6 +114,8 @@ class MarkdownParser {
       if (item.is_code) {
         // Code blocks - just wrap, no markdown processing
         result += this.renderCodeBlock(item.content, item.language);
+      } else if (item.is_math_block) {
+        result += this.renderMathBlock(item.content);
       } else if (item.is_toc) {
         // TOC placeholder - substitute with pre-generated TOC
         result += this.tocHTML;
@@ -167,18 +171,44 @@ class MarkdownParser {
       });
     }
 
-    // Now process each part
+    // Extract $$...$$ math blocks from text parts
+    const expandedParts = [];
     for (const part of parts) {
+      if (part.type !== 'text') {
+        expandedParts.push(part);
+        continue;
+      }
+      const mathBlockRegex = /\$\$([\s\S]+?)\$\$/g;
+      let mLastIndex = 0;
+      let mMatch;
+      while ((mMatch = mathBlockRegex.exec(part.content)) !== null) {
+        if (mMatch.index > mLastIndex) {
+          expandedParts.push({ type: 'text', content: part.content.substring(mLastIndex, mMatch.index) });
+        }
+        expandedParts.push({ type: 'math_block', content: mMatch[1] });
+        mLastIndex = mMatch.index + mMatch[0].length;
+      }
+      if (mLastIndex < part.content.length) {
+        expandedParts.push({ type: 'text', content: part.content.substring(mLastIndex) });
+      }
+    }
+
+    // Now process each part
+    for (const part of expandedParts) {
       if (part.type === 'code_block') {
-        // Code block
         items.push({
           content: part.content,
           language: part.language,
           is_code: true,
           is_new_paragraph: true
         });
+      } else if (part.type === 'math_block') {
+        items.push({
+          content: part.content,
+          is_math_block: true,
+          is_new_paragraph: true
+        });
       } else {
-        // Text part - need to handle inline code and paragraphs
         const textItems = this.parseTextPart(part.content);
         items.push(...textItems);
       }
@@ -374,6 +404,18 @@ class MarkdownParser {
     // So we won't match backticks here
 
     let result = text;
+
+    // Inline math ($...$)
+    result = result.replace(/\$([^\$\n]+?)\$/g, (_, math) => {
+      if (typeof katex !== 'undefined') {
+        try {
+          return katex.renderToString(this.unescapeHtml(math.trim()), { displayMode: false, throwOnError: false });
+        } catch (e) {
+          return `$${math}$`;
+        }
+      }
+      return `$${math}$`;
+    });
 
     // Colors
     result = result.replace(/\[([^\]]+)\]\{color:(\w+)\}/g, (_, content, colorName) => {
@@ -703,6 +745,24 @@ class MarkdownParser {
 
     tocHTML += '</ul></nav>\n';
     return tocHTML;
+  }
+
+  /* Unescape sanitized HTML entities for KaTeX input */
+  unescapeHtml(text) {
+    return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  }
+
+  /* Render block math ($$...$$) */
+  renderMathBlock(math) {
+    const raw = this.unescapeHtml(math.trim());
+    if (typeof katex !== 'undefined') {
+      try {
+        return `<div class="katex-display">${katex.renderToString(raw, { displayMode: true, throwOnError: false })}</div>\n`;
+      } catch (e) {
+        return `<p>$$${this.escapeHtml(raw)}$$</p>\n`;
+      }
+    }
+    return `<p>$$${this.escapeHtml(raw)}$$</p>\n`;
   }
 
   /* Create rainbow text */
