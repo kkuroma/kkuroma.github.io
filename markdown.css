@@ -15,8 +15,12 @@
 
 /* Code */
 .markdown-content code { background: var(--crust); padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.875rem; color: var(--green); font-family: 'Maple Mono', monospace; }
-.markdown-content pre { background: var(--crust); padding: 1rem; border-radius: 4px; overflow-x: auto; margin: 1rem 0; border: 1px solid var(--overlay0); }
-.markdown-content pre code { background: none; padding: 0; color: var(--text); }
+.markdown-content pre { background: var(--crust); padding: 1rem; border-radius: 4px; overflow-x: hidden; margin: 1rem 0; border: 1px solid var(--overlay0); position: relative; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
+.markdown-content pre code { background: none; padding: 0; color: var(--text); white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
+.markdown-content .code-copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: var(--surface0); border: 1px solid var(--overlay0); border-radius: 4px; padding: 0.35rem; cursor: pointer; color: var(--subtext0); opacity: 0; transition: opacity 0.2s, background 0.2s; display: flex; align-items: center; justify-content: center; z-index: 1; }
+.markdown-content pre:hover .code-copy-btn { opacity: 1; }
+.markdown-content .code-copy-btn:hover { background: var(--surface1); color: var(--text); }
+.markdown-content .code-copy-btn.copied { opacity: 1; }
 
 /* Blockquotes */
 .markdown-content blockquote { border-left: 4px solid var(--blue); padding-left: 1rem; margin: 1rem 0; color: var(--subtext0); font-style: italic; }

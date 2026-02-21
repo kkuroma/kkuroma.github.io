@@ -320,9 +320,17 @@ class MarkdownParser {
   renderCodeBlock(code, language) {
     // Unescape HTML entities from initial sanitization so that e.g. < shows as <
     code = this.unescapeHtml(code);
-    const highlightedCode = this.highlightCode(code.trim(), language);
+    const rawCode = code.trim();
+    const highlightedCode = this.highlightCode(rawCode, language);
     const langClass = language ? `language-${language}` : '';
-    return `<pre><code class="${langClass}">${highlightedCode}</code></pre>\n`;
+    // Store raw code as a data attribute for the copy button (escaped for HTML attribute)
+    const escapedRaw = rawCode.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const copyIcon = typeof window !== 'undefined' && window.getSVG ? window.getSVG('copy', { stroke: 'currentColor' }, 16, 16) : '';
+    const checkIcon = typeof window !== 'undefined' && window.getSVG ? window.getSVG('check', { stroke: 'currentColor' }, 16, 16) : '';
+    const escapedCopyIcon = copyIcon.replace(/"/g, '&quot;');
+    const escapedCheckIcon = checkIcon.replace(/"/g, '&quot;');
+    const copyBtn = `<button class="code-copy-btn" title="Copy to clipboard" data-copy-icon="${escapedCopyIcon}" data-check-icon="${escapedCheckIcon}" onclick="var btn=this;navigator.clipboard.writeText(btn.parentElement.querySelector('code').getAttribute('data-raw')).then(function(){btn.innerHTML=btn.getAttribute('data-check-icon');btn.classList.add('copied');setTimeout(function(){btn.innerHTML=btn.getAttribute('data-copy-icon');btn.classList.remove('copied')},2000)})">${copyIcon}</button>`;
+    return `<pre class="code-block-wrapper">${copyBtn}<code class="${langClass}" data-raw="${escapedRaw}">${highlightedCode}</code></pre>\n`;
   }
 
   /* Syntax highlighting */
