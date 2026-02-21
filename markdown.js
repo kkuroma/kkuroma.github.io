@@ -819,6 +819,45 @@ class MarkdownParser {
   }
 }
 
+/* Static KaTeX lazy loader */
+MarkdownParser._katexLoaded = false;
+MarkdownParser._katexLoading = null;
+
+MarkdownParser.loadKatexIfNeeded = function(text) {
+  // Quick check: does the text contain any $ signs?
+  if (!text || !text.includes('$')) return Promise.resolve();
+  // Already loaded
+  if (typeof katex !== 'undefined') {
+    MarkdownParser._katexLoaded = true;
+    return Promise.resolve();
+  }
+  // Already loading
+  if (MarkdownParser._katexLoading) return MarkdownParser._katexLoading;
+
+  MarkdownParser._katexLoading = new Promise((resolve) => {
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css';
+    document.head.appendChild(link);
+
+    // Load JS
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.js';
+    script.onload = () => {
+      MarkdownParser._katexLoaded = true;
+      resolve();
+    };
+    script.onerror = () => {
+      console.warn('Failed to load KaTeX');
+      resolve(); // Resolve anyway so parsing continues without KaTeX
+    };
+    document.head.appendChild(script);
+  });
+
+  return MarkdownParser._katexLoading;
+};
+
 // Export
 if (typeof window !== 'undefined') {
   window.MarkdownParser = MarkdownParser;

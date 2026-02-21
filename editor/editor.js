@@ -201,7 +201,7 @@ class BlogEditor {
     }
   }
 
-  renderPreview() {
+  async renderPreview() {
     // Collect current data
     this.collectMetadata();
     this.content = document.getElementById('content-textarea').value;
@@ -233,8 +233,9 @@ class BlogEditor {
     const contentBody = document.createElement('div');
     contentBody.className = 'preview-content markdown-content';
 
-    // Parse markdown
+    // Parse markdown (lazy-load KaTeX if needed)
     const parser = new MarkdownParser(this.theme, this.variant);
+    await MarkdownParser.loadKatexIfNeeded(this.content);
     contentBody.innerHTML = parser.parse(this.content || '*No content yet. Start writing in edit mode!*');
 
     // Add syntax highlighting

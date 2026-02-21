@@ -9,6 +9,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="markdown.css">
   <link rel="stylesheet" href="website.css">
+  <script defer src="prism.js/prism.js"></script>
+  <script defer src="themes.js"></script>
+  <script defer src="svg-library.js"></script>
+  <script defer src="markdown.js"></script>
+  <script defer src="website.js"></script>
+  <script defer src="blog-loader.js"></script>
+  <script defer src="configs/config.js"></script>
+  <script defer src="configs/config-projects.js"></script>
+  <script defer src="configs/config-404.js"></script>
 </head>
 <body>
   <div id="app">
@@ -16,19 +25,8 @@
       <p style="font-size: 2rem; color: var(--text); font-weight: 500;">Loading...</p>
     </div>
   </div>
-  <script src="prism.js/prism.js"></script>
-  <script src="themes.js"></script>
-  <script src="svg-library.js"></script>
-  <script src="markdown.js"></script>
-  <script src="website.js"></script>
-  <script src="blog-loader.js"></script>
-  <script src="configs/config.js"></script>
-  <script src="configs/config-projects.js"></script>
-  <script src="configs/config-404.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.js"></script>
   <script>
-    async function initApp() {
+    document.addEventListener('DOMContentLoaded', async function() {
       await window.blogLoader.loadAllBlogs();
       const BLOG_CONFIG = window.blogLoader.generateBlogListingConfig();
       window.router.register('/', HOME_CONFIG);
@@ -36,8 +34,7 @@
       window.router.register('/blog', BLOG_CONFIG);
       window.router.register('/404', NOT_FOUND_CONFIG);
       window.router.init();
-    }
-    initApp();
+    });
   </script>
 </body>
 </html>

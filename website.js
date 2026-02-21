@@ -239,7 +239,14 @@ class WebsiteGenerator {
     });
   }
 
-  render() {
+  async render() {
+    // Lazy-load KaTeX if any content contains $
+    const allText = [
+      this.config.navbar?.centerText || '',
+      ...this.config.boxes.map(b => b.content?.markdown || b.content?.code || '')
+    ].join('\n');
+    await MarkdownParser.loadKatexIfNeeded(allText);
+
     const app = document.getElementById('app');
     app.innerHTML = '';
     app.appendChild(this.renderNavbar());
@@ -279,6 +286,7 @@ class WebsiteGenerator {
       // Hamburger menu
       const hamburger = document.createElement('button');
       hamburger.className = 'hamburger';
+      hamburger.setAttribute('aria-label', 'Toggle navigation menu');
       hamburger.innerHTML = '<i class="fa fa-bars"></i>';
       hamburger.onclick = (e) => {
         e.stopPropagation();
@@ -367,6 +375,7 @@ class WebsiteGenerator {
     const fontSizeSelect = document.createElement('select');
     fontSizeSelect.id = 'font-size-select';
     fontSizeSelect.className = 'theme-select';
+    fontSizeSelect.setAttribute('aria-label', 'Font Size');
     fontSizeSelect.title = 'Font Size';
     [
       { value: 'small', label: 'Small' },
@@ -386,6 +395,7 @@ class WebsiteGenerator {
     const themeSelect = document.createElement('select');
     themeSelect.id = 'theme-select';
     themeSelect.className = 'theme-select';
+    themeSelect.setAttribute('aria-label', 'Theme');
     const availableThemes = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['catppuccin', 'gruvbox', 'tokyonight'];
     availableThemes.forEach(theme => {
       const option = document.createElement('option');
@@ -400,6 +410,7 @@ class WebsiteGenerator {
     const variantSelect = document.createElement('select');
     variantSelect.id = 'variant-select';
     variantSelect.className = 'theme-select';
+    variantSelect.setAttribute('aria-label', 'Color Mode');
     variantSelect.title = 'Color Mode';
     [
       { value: 'dark', label: 'Dark' },
@@ -510,6 +521,7 @@ class WebsiteGenerator {
     searchBar.placeholder = 'Search...';
     searchBar.className = 'search-bar';
     searchBar.id = 'search-bar';
+    searchBar.setAttribute('aria-label', 'Search');
     selection.appendChild(searchBar);
 
     // tags
@@ -522,6 +534,7 @@ class WebsiteGenerator {
     const allTag = document.createElement('button');
     allTag.className = 'tag-button active';
     allTag.textContent = 'All';
+    allTag.setAttribute('aria-pressed', 'true');
     allTag.onclick = () => this.filterByTag('All');
     tagsDiv.appendChild(allTag);
 
@@ -529,6 +542,7 @@ class WebsiteGenerator {
       const tagBtn = document.createElement('button');
       tagBtn.className = 'tag-button';
       tagBtn.textContent = tag;
+      tagBtn.setAttribute('aria-pressed', 'false');
       tagBtn.style.setProperty('--tag-color', `var(--${this.tagColors[tag]})`);
       tagBtn.onclick = () => this.filterByTag(tag);
       tagsDiv.appendChild(tagBtn);
@@ -546,6 +560,7 @@ class WebsiteGenerator {
 
       const sortSelect = document.createElement('select');
       sortSelect.id = 'sort-select';
+      sortSelect.setAttribute('aria-label', 'Sort by');
 
       const defaultOption = document.createElement('option');
       defaultOption.value = '';
@@ -777,11 +792,23 @@ class WebsiteGenerator {
     // Make box clickable if href provided
     if (box.href) {
       boxEl.classList.add('box-has-link');
+      boxEl.setAttribute('role', 'link');
+      boxEl.setAttribute('tabindex', '0');
+      const navigateBox = () => {
+        box.href.startsWith('#')
+          ? window.router.navigate(box.href.slice(1))
+          : window.open(box.href, '_blank');
+      };
       boxEl.addEventListener('click', (e) => {
         if (e.target.tagName !== 'A') {
-          box.href.startsWith('#')
-            ? (e.preventDefault(), window.router.navigate(box.href.slice(1)))
-            : window.open(box.href, '_blank');
+          e.preventDefault();
+          navigateBox();
+        }
+      });
+      boxEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          navigateBox();
         }
       });
     } else {
@@ -898,6 +925,7 @@ class WebsiteGenerator {
     button.className = 'back-to-top';
     button.id = 'back-to-top';
     button.innerHTML = '<i class="fa fa-arrow-up"></i>';
+    button.setAttribute('aria-label', 'Back to top');
     button.title = 'Back to top';
     button.onclick = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -909,7 +937,9 @@ class WebsiteGenerator {
     this.activeTag = tag;
     this.currentPage = 1; 
     document.querySelectorAll('.tag-button').forEach(btn => {
-      btn.classList.toggle('active', btn.textContent === tag);
+      const isActive = btn.textContent === tag;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
     this.reRenderContent();
   }
