@@ -277,7 +277,7 @@ class BlogEditor {
     const backToTop = document.createElement('button');
     backToTop.className = 'back-to-top';
     backToTop.id = 'preview-back-to-top';
-    backToTop.innerHTML = '<i class="fa fa-arrow-up"></i>';
+    backToTop.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
     backToTop.title = 'Back to top';
     backToTop.onclick = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });

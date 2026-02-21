@@ -295,7 +295,7 @@ class WebsiteGenerator {
       const hamburger = document.createElement('button');
       hamburger.className = 'hamburger';
       hamburger.setAttribute('aria-label', 'Toggle navigation menu');
-      hamburger.innerHTML = '<i class="fa fa-bars"></i>';
+      hamburger.innerHTML = getSVG('bars', { stroke: 'currentColor' }, 18, 18);
       hamburger.onclick = (e) => {
         e.stopPropagation();
         this.toggleMobileMenu();
