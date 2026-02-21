@@ -6,7 +6,6 @@ My current personal website, featuring a minimal tiling design! Visit [my websit
 
 - Origami collection: I just lost a lot of my origami pictures on my old phone. While I could recover from the still-working storage, I've decided to fold all of these models again cuz why not :^).
 - Services: a router for my self-hosted services. Right now only `searx.kuroma.dev` is a free-for-all public access, so I'd rather wait until I can populate the site with a bit more content
-- Mobile support: man I wish all phones rendered sites like desktop PCs :(
 
 ## How to create websites using my template
 
@@ -14,4 +13,4 @@ Pages are created declaratively to `./configs/*.js`. Blogs are declared in `./bl
 
 ## Imported Libraries/Frameworks
 
-I used **NO JAVASCRIPT FRAMEWORKS** for this site so it should load faster than my old one. Only one library, prism.js (syntax highlighting), was imported for now.
+I used **NO JAVASCRIPT FRAMEWORKS** for this site so it should load faster than my old one. Only two libraries, prism.js (syntax highlighting) and katex (mathematical expressions), were imported for now.
