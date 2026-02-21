@@ -1,0 +1,19 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+# Security Policy
+# https://securitytxt.org/
+
+Contact: mailto:contact@kuroma.dev
+Acknowledgements: https://github.com/kkuroma/kkuroma.github.io
+Canonical: https://kuroma.dev/.well-known/security.txt
+Expires: 2027-02-21T18:02:24+07:00
+
+# If you discover a security vulnerability, please contact me via email
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQRddEeSWDxbaeizZcXpMzu4QnrGxwUCaZmSjwAKCRDpMzu4QnrG
+x4IoAP0VhRWyyCrRXdLLl342XPVsEhka/Rxrg5SEhfFjU6tCpAD/S09+tC8Hort7
+i/xkGfp6vBowX7GrYuhIL4ZOFns7PQw=
+=bSRL
+-----END PGP SIGNATURE-----
