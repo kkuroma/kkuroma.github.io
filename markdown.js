@@ -707,13 +707,18 @@ class MarkdownParser {
 
   /* Create rainbow text */
   createRainbowText(text) {
-    const chars = text.split('');
-    const wrapped = chars.map((char, index) => {
-      if (char === ' ') return ' ';
-      const delay = index * 0.1;
-      return `<span class="rainbow-char" style="--rainbow-delay: ${delay}s">${char}</span>`;
-    }).join('');
-    return `<span class="rainbow-text">${wrapped}</span>`;
+    let charIndex = 0;
+    const words = text.split(' ');
+    const wrappedWords = words.map(word => {
+      const chars = word.split('').map(char => {
+        const delay = charIndex * 0.1;
+        charIndex++;
+        return `<span class="rainbow-char" style="--rainbow-delay: ${delay}s">${char}</span>`;
+      }).join('');
+      charIndex++; // account for the space
+      return `<span class="rainbow-word">${chars}</span>`;
+    });
+    return `<span class="rainbow-text">${wrappedWords.join(' ')}</span>`;
   }
 
   /* Set theme */
