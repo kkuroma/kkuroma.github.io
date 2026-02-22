@@ -1,5 +1,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html { font-size: var(--font-size-base, 16px); }
+
 body {
   font-family: 'Maple Mono', monospace, 'Noto Sans', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans Thai', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: var(--base);
@@ -168,7 +170,10 @@ svg.box-image, svg.box-image-full { width: 100%; height: 100%; display: block; }
 
 /* Responsive */
 @media (max-width: 767px) {
+  html { font-size: calc(var(--font-size-base, 16px) * 0.8); }
   .navbar { padding: 0.6rem 1rem; margin: 0.5rem 1rem; }
+  .navbar-left { flex: 0 0 auto; }
+  .navbar-right { gap: 0.4rem; }
   .header { padding: 2rem 1rem 1rem; }
   .header h1 { font-size: 2rem; }
   .selection-area { padding: 1rem; }

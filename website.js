@@ -208,7 +208,7 @@ class WebsiteGenerator {
       'large': '18px',
       'xlarge': '20px'
     };
-    root.style.fontSize = fontSizes[this.fontSize] || fontSizes['medium'];
+    root.style.setProperty('--font-size-base', fontSizes[this.fontSize] || fontSizes['medium']);
   }
 
   applyMetadata() {
