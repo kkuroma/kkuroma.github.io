@@ -14,3 +14,6 @@ Pages are created declaratively to `./configs/*.js`. Blogs are declared in `./bl
 ## Imported Libraries/Frameworks
 
 I used **NO JAVASCRIPT FRAMEWORKS** for this site so it should load faster than my old one. Only two libraries, prism.js (syntax highlighting) and katex (mathematical expressions), were imported for now.
+
+## Officially on forgejo
+Now mirrors from github to my personal git repo!
