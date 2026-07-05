@@ -61,7 +61,7 @@ class BlogLoader {
       pageTitle: "Blogs - Kuroma.dev",
       maxItemsPerPage: 6,
       favicon: "",
-      theme: "catppuccin",
+      theme: "Natsumikan",
       variant: "dark",
       fontSize: "medium",
       navbar: {
@@ -167,7 +167,7 @@ class BlogLoader {
     return {
       pageTitle: `${blog.title} - Kuroma.dev`,
       favicon: "./assets/icon.webp",
-      theme: "catppuccin",
+      theme: "Natsumikan",
       variant: "dark",
       fontSize: "medium",
       navbar: {

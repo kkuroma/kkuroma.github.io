@@ -106,7 +106,7 @@ window.stateManager = new StateManager();
 class WebsiteGenerator {
   constructor(config) {
     this.config = config;
-    this.theme = config.theme || 'catppuccin';
+    this.theme = (typeof THEMES !== 'undefined' && THEMES[config.theme]) ? config.theme : 'Natsumikan';
     this.variantMode = config.variant || 'dark'; // 'dark', 'light', or 'system'
     this.variant = this.getEffectiveVariant();
     this.fontSize = config.fontSize || 'medium';
@@ -118,6 +118,7 @@ class WebsiteGenerator {
     this.activeSortBy = null;
     this.currentPage = 1;
     this.maxItemsPerPage = config.maxItemsPerPage || null; // null = render all
+    this._placements = [];
     this.init();
   }
 
@@ -136,8 +137,19 @@ class WebsiteGenerator {
         this.render();
       } else {
         this.updateGridRowHeight();
+        // debounced re-render restores tags dropped by settleBoxes when the
+        // viewport grows back (tiling itself is deterministic)
+        clearTimeout(this._resizeTimer);
+        this._resizeTimer = setTimeout(() => this.reRenderContent(), 150);
       }
     });
+    // re-measure after layout-shifting events (webfont swap, late resources) —
+    // text metrics change and boxes may need more row units
+    requestAnimationFrame(() => this.settleBoxes());
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => requestAnimationFrame(() => this.settleBoxes()));
+    }
+    window.addEventListener('load', () => this.settleBoxes(), { once: true });
     // handle system theme
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
       if (this.variantMode === 'system') {
@@ -255,6 +267,7 @@ class WebsiteGenerator {
       app.appendChild(this.renderFooter());
     }
     app.appendChild(this.renderBackToTop());
+    this.settleBoxes();
 
     // Lazy-load KaTeX if any content contains $, then re-render so math displays
     if (!MarkdownParser._katexLoaded) {
@@ -279,6 +292,7 @@ class WebsiteGenerator {
       const newBoxes = this.renderBoxes();
       wrapper.replaceWith(newBoxes);
       this.updateGridRowHeight();
+      this.settleBoxes();
     }
   }
 
@@ -404,11 +418,11 @@ class WebsiteGenerator {
     themeSelect.id = 'theme-select';
     themeSelect.className = 'theme-select';
     themeSelect.setAttribute('aria-label', 'Theme');
-    const availableThemes = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['catppuccin', 'gruvbox', 'tokyonight'];
+    const availableThemes = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['Haruhana', 'Natsumikan', 'Akiba', 'Fuyuyuki'];
     availableThemes.forEach(theme => {
       const option = document.createElement('option');
       option.value = theme;
-      option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+      option.textContent = theme;
       option.selected = theme === this.theme;
       themeSelect.appendChild(option);
     });
@@ -622,21 +636,65 @@ class WebsiteGenerator {
       wrapper.appendChild(this.renderPagination(totalPages, totalBoxes));
     }
 
+    this._placements = [];
+    // Small viewports flow boxes in source order with natural heights (no
+    // fixed square rows), so long text is never squished into a tight box
+    const autoFlow = this.currentMode === 'small';
     boxes.forEach(box => {
       const boxWidth = Math.min(box.w, columns);
+      if (autoFlow && !box.isBlogPost) {
+        container.appendChild(this.renderBox(box, boxWidth, null, box.h));
+        return;
+      }
       const position = this.findPosition(grid, boxWidth, box.h);
       if (position) {
-        container.appendChild(this.renderBox(box, boxWidth, position));
+        const el = this.renderBox(box, boxWidth, position, box.h);
+        container.appendChild(el);
         for (let row = position.row; row < position.row + box.h; row++) {
           for (let col = position.col; col < position.col + boxWidth; col++) {
             if (grid[row]) grid[row][col] = true;
           }
         }
+        this._placements.push({ box, el, row: position.row, col: position.col, w: boxWidth, h: box.h });
       }
     });
+    if (!allBlogPosts && !autoFlow) {
+      this.stretchBoxesRight(grid, columns);
+    }
     wrapper.appendChild(container);
 
     return wrapper;
+  }
+
+  // A box with nothing but free cells to its right (across all its rows)
+  // stretches to the grid edge. Square-aspect cards (w == h) are exempt.
+  stretchBoxesRight(grid, columns) {
+    this._placements.forEach(p => {
+      if (p.box.w === p.box.h) return;
+      if (p.col + p.w >= columns) return;
+      for (let c = p.col + p.w; c < columns; c++) {
+        for (let r = p.row; r < p.row + p.h; r++) {
+          if (grid[r][c]) return;
+        }
+      }
+      for (let c = p.col + p.w; c < columns; c++) {
+        for (let r = p.row; r < p.row + p.h; r++) grid[r][c] = true;
+      }
+      p.w = columns - p.col;
+      p.el.style.gridColumn = `${p.col + 1} / span ${p.w}`;
+    });
+  }
+
+  // Tiling is deterministic: boxes always occupy their configured w x h.
+  // This pass only handles cosmetic fixes that don't change box geometry.
+  settleBoxes() {
+    // Icon cards: if the tags would wrap below the footer line, drop them
+    document.querySelectorAll('.box').forEach(el => {
+      if (!el.querySelector('.box-body-image-only')) return;
+      const ft = el.querySelector('.box-footer');
+      const tg = el.querySelector('.box-tags');
+      if (ft && tg && tg.getBoundingClientRect().top > ft.getBoundingClientRect().top + 4) tg.remove();
+    });
   }
 
   renderPagination(totalPages, totalBoxes) {
@@ -741,12 +799,29 @@ class WebsiteGenerator {
   }
 
   updateGridRowHeight() {
+    // Content scale: fonts track the grid unit relative to the ~100px unit of
+    // the large layout, so smaller viewports render a proportionally shrunk
+    // version of the large design instead of squishing text into tight boxes
+    const columns = this.getColumns();
+    const small = this.currentMode === 'small';
+    const pad = small ? 32 : 64;
+    const gapEst = small ? 12 : 16;
+    const unitEst = (window.innerWidth - pad - (columns - 1) * gapEst) / columns;
+    const scale = Math.min(1.15, Math.max(0.65, unitEst / 100));
+    document.documentElement.style.setProperty('--content-scale', scale.toFixed(3));
     const container = document.querySelector('.boxes-container');
     if (!container) return;
-    const columns = this.getColumns();
+    if (small) {
+      // Small mode: natural box heights (auto rows), square cards keep their
+      // aspect via CSS aspect-ratio
+      container.style.gridAutoRows = 'auto';
+      return;
+    }
+    // Medium/large: rows are square units so boxes keep their configured aspect
     const containerWidth = container.clientWidth;
     const gap = parseFloat(getComputedStyle(container).gap) || 16;
     const columnWidth = (containerWidth - (columns - 1) * gap) / columns;
+    this._rowUnit = columnWidth;
     container.style.gridAutoRows = `${columnWidth}px`;
   }
 
@@ -791,11 +866,18 @@ class WebsiteGenerator {
     return img.outerHTML;
   }
 
-  renderBox(box, width, position) {
+  renderBox(box, width, position, effH) {
     const boxEl = document.createElement('div');
     boxEl.className = `box${box.pinned ? ' box-pinned' : ''}${box.isBlogPost ? ' box-blog-post' : ''}`;
-    boxEl.style.gridColumn = `${position.col + 1} / span ${width}`;
-    if (!box.isBlogPost) boxEl.style.gridRow = `${position.row + 1} / span ${box.h}`;
+    if (position) {
+      boxEl.style.gridColumn = `${position.col + 1} / span ${width}`;
+      if (!box.isBlogPost) boxEl.style.gridRow = `${position.row + 1} / span ${effH || box.h}`;
+    } else {
+      // Small-viewport auto flow: natural height, source order
+      boxEl.style.gridColumn = `span ${width}`;
+      boxEl.classList.add('box-auto');
+      if (box.w === box.h) boxEl.classList.add('box-square');
+    }
 
     // Make box clickable if href provided
     if (box.href) {

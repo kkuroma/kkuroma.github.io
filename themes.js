@@ -1,508 +1,268 @@
 /**
- * Color palette for each theme
- * Structure: 
- *  { 
- *    themeName: { 
- *      variant: { 
- *        colorName: hexValue 
- *      } 
- *    } 
- *  }
+ * Seasonal color palettes derived from the shunka-shuutou (春夏秋冬) theme set.
+ * Structure: { themeName: { variant: { colorName: hexValue } } }
+ *
+ * primary/secondary/tertiary are the season's accent colors and drive the
+ * site chrome (headings, links, borders, buttons). The named colors
+ * (red, blue, green, ...) are literal hues for content: tags, syntax
+ * highlighting, rainbow text, and the {color:name} markdown syntax.
  */
 
 const THEMES = {
-  catppuccin: {
+  'Haruhana': { // Haruhana (spring)
     light: {
-      // Catppuccin Latte
-      base: '#eff1f5',
-      mantle: '#e6e9ef',
-      crust: '#dce0e8',
-
-      text: '#4c4f69',
-      subtext1: '#5c5f77',
-      subtext0: '#6c6f85',
-
-      surface2: '#acb0be',
-      surface1: '#bcc0cc',
-      surface0: '#ccd0da',
-
-      overlay2: '#7c7f93',
-      overlay1: '#8c8fa1',
-      overlay0: '#9ca0b0',
-
-      red: '#d20f39',
-      maroon: '#e64553',
-      peach: '#fe640b',
-      yellow: '#df8e1d',
-      green: '#40a02b',
-      teal: '#179299',
-      sky: '#04a5e5',
-      sapphire: '#209fb5',
-      blue: '#1e66f5',
-      lavender: '#7287fd',
-      mauve: '#8839ef',
-      pink: '#ea76cb',
-
-      flamingo: '#dd7878',
-      rosewater: '#dc8a78'
+      base: '#EFF0F8',
+      mantle: '#FFFFFF',
+      crust: '#e1e2ed',
+      text: '#252535',
+      subtext1: '#393947',
+      subtext0: '#565662',
+      surface2: '#C8C8D8',
+      surface1: '#d4d4e2',
+      surface0: '#dddeea',
+      overlay2: '#565662',
+      overlay1: '#848491',
+      overlay0: '#a0a0af',
+      primary: '#C04868',
+      secondary: '#6248B8',
+      tertiary: '#2A8A60',
+      red: '#B00020',
+      maroon: '#8F3A47',
+      peach: '#99400d',
+      yellow: '#8A6A00',
+      green: '#2A8A60',
+      teal: '#206878',
+      sky: '#1E7AA8',
+      sapphire: '#286494',
+      blue: '#2458B8',
+      lavender: '#5C64C4',
+      mauve: '#6248B8',
+      pink: '#89246c',
+      flamingo: '#B25A48',
+      rosewater: '#A05464'
     },
     dark: {
-      // Catppuccin Mocha
-      base: '#1e1e2e',
-      mantle: '#181825',
-      crust: '#11111b',
-
-      text: '#cdd6f4',
-      subtext1: '#bac2de',
-      subtext0: '#a6adc8',
-
-      surface2: '#585b70',
-      surface1: '#45475a',
-      surface0: '#313244',
-
-      overlay2: '#9399b2',
-      overlay1: '#7f849c',
-      overlay0: '#6c7086',
-
-      red: '#f38ba8',
-      maroon: '#eba0ac',
-      peach: '#fab387',
-      yellow: '#f9e2af',
-      green: '#a6e3a1',
-      teal: '#94e2d5',
-      sky: '#89dceb',
-      sapphire: '#74c7ec',
-      blue: '#89b4fa',
-      lavender: '#b4befe',
-      mauve: '#cba6f7',
-      pink: '#f5c2e7',
-
-      flamingo: '#f2cdcd',
-      rosewater: '#f5e0dc'
+      base: '#0C0F1E',
+      mantle: '#171D36',
+      crust: '#090B15',
+      text: '#D4D0EA',
+      subtext1: '#babbd3',
+      subtext0: '#8B95A8',
+      surface2: '#424D68',
+      surface1: '#2B3758',
+      surface0: '#232E4C',
+      overlay2: '#8B95A8',
+      overlay1: '#6a758b',
+      overlay0: '#58637b',
+      primary: '#F07898',
+      secondary: '#B4A2E8',
+      tertiary: '#6FC898',
+      red: '#FF5370',
+      maroon: '#D46A79',
+      peach: '#fb9e6c',
+      yellow: '#F8D06A',
+      green: '#6FC898',
+      teal: '#6BCAD8',
+      sky: '#8AD4F0',
+      sapphire: '#76baec',
+      blue: '#7AA2F7',
+      lavender: '#AEB5F2',
+      mauve: '#B4A2E8',
+      pink: '#F5A8D0',
+      flamingo: '#F0B39E',
+      rosewater: '#E8C4C0'
     }
   },
-
-  gruvbox: {
+  'Natsumikan': { // Natsumikan (summer)
     light: {
-      // Gruvbox Light (Hard contrast)
-      base: '#f9f5d7',
-      mantle: '#f2e5bc',
-      crust: '#ebdbb2',
-
-      text: '#3c3836',
-      subtext1: '#504945',
-      subtext0: '#665c54',
-
-      surface2: '#bdae93',
-      surface1: '#d5c4a1',
-      surface0: '#ebdbb2',
-
-      overlay2: '#7c6f64',
-      overlay1: '#928374',
-      overlay0: '#a89984',
-
-      red: '#cc241d',
-      maroon: '#9d0006',
-      peach: '#d65d0e',
-      yellow: '#d79921',
-      green: '#98971a',
-      teal: '#689d6a',
-      sky: '#458588',
-      sapphire: '#076678',
-      blue: '#458588',
-      lavender: '#8f3f71',
-      mauve: '#b16286',
-      pink: '#d3869b',
-
-      flamingo: '#d3869b',
-      rosewater: '#d3869b'
+      base: '#EEF0F5',
+      mantle: '#FFFFFF',
+      crust: '#e1e4eb',
+      text: '#272B32',
+      subtext1: '#3a3e47',
+      subtext0: '#565B66',
+      surface2: '#C8CDD8',
+      surface1: '#d3d8e1',
+      surface0: '#dde0e8',
+      overlay2: '#565B66',
+      overlay1: '#848994',
+      overlay0: '#a0a5b0',
+      primary: '#C15A20',
+      secondary: '#8F5A00',
+      tertiary: '#006070',
+      red: '#B00020',
+      maroon: '#8F3A47',
+      peach: '#9c360d',
+      yellow: '#8F5A00',
+      green: '#4A7C59',
+      teal: '#006070',
+      sky: '#2878A0',
+      sapphire: '#146c88',
+      blue: '#2A5CB8',
+      lavender: '#5A62C0',
+      mauve: '#7C4DAA',
+      pink: '#962665',
+      flamingo: '#B05A40',
+      rosewater: '#A25668'
     },
     dark: {
-      // Gruvbox Dark (Hard contrast)
-      base: '#1d2021',
-      mantle: '#282828',
-      crust: '#32302f',
-
-      text: '#ebdbb2',
-      subtext1: '#d5c4a1',
-      subtext0: '#bdae93',
-
-      surface2: '#504945',
-      surface1: '#3c3836',
-      surface0: '#32302f',
-
-      overlay2: '#a89984',
-      overlay1: '#928374',
-      overlay0: '#7c6f64',
-
-      red: '#fb4934',
-      maroon: '#cc241d',
-      peach: '#fe8019',
-      yellow: '#fabd2f',
-      green: '#b8bb26',
-      teal: '#8ec07c',
-      sky: '#83a598',
-      sapphire: '#458588',
-      blue: '#83a598',
-      lavender: '#d3869b',
-      mauve: '#d3869b',
-      pink: '#d3869b',
-
-      flamingo: '#d3869b',
-      rosewater: '#d3869b'
+      base: '#0D1017',
+      mantle: '#171D26',
+      crust: '#0A0C12',
+      text: '#D1D1C7',
+      subtext1: '#babcb9',
+      subtext0: '#8E959E',
+      surface2: '#464B5D',
+      surface1: '#253040',
+      surface0: '#242C3A',
+      overlay2: '#8E959E',
+      overlay1: '#6e7481',
+      overlay0: '#5c6170',
+      primary: '#F5803E',
+      secondary: '#FFB454',
+      tertiary: '#39BAE6',
+      red: '#FF5370',
+      maroon: '#D9707E',
+      peach: '#ff8d5f',
+      yellow: '#FFB454',
+      green: '#AAD94C',
+      teal: '#4DD0B0',
+      sky: '#6BD2F0',
+      sapphire: '#4FA6E8',
+      blue: '#73B8FF',
+      lavender: '#A6ACF0',
+      mauve: '#C792EA',
+      pink: '#F58EC0',
+      flamingo: '#F2A788',
+      rosewater: '#E8C0B8'
     }
   },
-
-  tokyonight: {
+  'Akiba': { // Akiba (autumn)
     light: {
-      // Tokyo Night Day
-      base: '#d5d6db',
-      mantle: '#e1e2e7',
-      crust: '#e9e9ed',
-
-      text: '#343b58',
-      subtext1: '#4c505e',
-      subtext0: '#565a6e',
-
-      surface2: '#9699a3',
-      surface1: '#b2b5bd',
-      surface0: '#cbccd1',
-
-      overlay2: '#787c99',
-      overlay1: '#8990b3',
-      overlay0: '#9aa5ce',
-
-      red: '#8c4351',
-      maroon: '#8c4351',
-      peach: '#965027',
-      yellow: '#8f5e15',
-      green: '#485e30',
-      teal: '#33635c',
-      sky: '#166775',
-      sapphire: '#0f4b6e',
-      blue: '#34548a',
-      lavender: '#5a4a78',
-      mauve: '#5a4a78',
-      pink: '#7847bd',
-
-      flamingo: '#b15c00',
-      rosewater: '#b15c00'
+      base: '#F0EAE4',
+      mantle: '#FFFFFF',
+      crust: '#e8ded7',
+      text: '#2A1E18',
+      subtext1: '#40322c',
+      subtext0: '#60504A',
+      surface2: '#D8C8C0',
+      surface1: '#dfd2cb',
+      surface0: '#e5dbd4',
+      overlay2: '#60504A',
+      overlay1: '#908079',
+      overlay0: '#ae9e97',
+      primary: '#902020',
+      secondary: '#806000',
+      tertiary: '#507840',
+      red: '#A82828',
+      maroon: '#7A3030',
+      peach: '#86460d',
+      yellow: '#806000',
+      green: '#507840',
+      teal: '#207090',
+      sky: '#3088B8',
+      sapphire: '#247498',
+      blue: '#2A58A8',
+      lavender: '#5E64B8',
+      mauve: '#6048A0',
+      pink: '#783460',
+      flamingo: '#A05A3C',
+      rosewater: '#9A5A64'
     },
     dark: {
-      // Tokyo Night Storm
-      base: '#24283b',
-      mantle: '#1f2335',
-      crust: '#1a1b26',
-
-      text: '#c0caf5',
-      subtext1: '#a9b1d6',
-      subtext0: '#9aa5ce',
-
-      surface2: '#565f89',
-      surface1: '#414868',
-      surface0: '#2f3549',
-
-      overlay2: '#787c99',
-      overlay1: '#828bb8',
-      overlay0: '#a9b1d6',
-
-      red: '#f7768e',
-      maroon: '#db4b4b',
-      peach: '#ff9e64',
-      yellow: '#e0af68',
-      green: '#9ece6a',
-      teal: '#73daca',
-      sky: '#7dcfff',
-      sapphire: '#2ac3de',
-      blue: '#7aa2f7',
-      lavender: '#bb9af7',
-      mauve: '#bb9af7',
-      pink: '#c0a6f7',
-
-      flamingo: '#ff9e64',
-      rosewater: '#ff9e64'
+      base: '#141210',
+      mantle: '#221D1A',
+      crust: '#0F0D0B',
+      text: '#DDD0C0',
+      subtext1: '#c6b8aa',
+      subtext0: '#9C8C80',
+      surface2: '#484038',
+      surface1: '#403530',
+      surface0: '#362D28',
+      overlay2: '#9C8C80',
+      overlay1: '#766a60',
+      overlay0: '#61574e',
+      primary: '#C84040',
+      secondary: '#DCA561',
+      tertiary: '#98BB6C',
+      red: '#C84040',
+      maroon: '#E86060',
+      peach: '#d47d54',
+      yellow: '#DCA561',
+      green: '#98BB6C',
+      teal: '#82C8AE',
+      sky: '#90CCE0',
+      sapphire: '#6AA5D8',
+      blue: '#82AAF0',
+      lavender: '#A8AEE0',
+      mauve: '#957FB8',
+      pink: '#D8879C',
+      flamingo: '#E0A182',
+      rosewater: '#D8B8A8'
     }
   },
-
-  kanagawa: {
+  'Fuyuyuki': { // Fuyuyuki (winter)
     light: {
-      // Kanagawa Light
-      base: '#f2ecbc',
-      mantle: '#e7dba0',
-      crust: '#dcd5ac',
-
-      text: '#1f1f28',
-      subtext1: '#2a2a37',
-      subtext0: '#363646',
-
-      surface2: '#b8b4d0',
-      surface1: '#c9c5dc',
-      surface0: '#dcd8e8',
-
-      overlay2: '#8a8980',
-      overlay1: '#9e9b93',
-      overlay0: '#b2afa6',
-
-      red: '#c84053',
-      maroon: '#d7474b',
-      peach: '#ffa066',
-      yellow: '#c0a36e',
-      green: '#76a56a',
-      teal: '#6a9589',
-      sky: '#7aa89f',
-      sapphire: '#658594',
-      blue: '#7e9cd8',
-      lavender: '#938aa9',
-      mauve: '#957fb8',
-      pink: '#d27e99',
-
-      flamingo: '#e98a00',
-      rosewater: '#e46876'
+      base: '#EDF2F8',
+      mantle: '#FFFFFF',
+      crust: '#dde5ed',
+      text: '#202530',
+      subtext1: '#333946',
+      subtext0: '#505868',
+      surface2: '#C0CCD8',
+      surface1: '#ced7e2',
+      surface0: '#d9e1ea',
+      overlay2: '#505868',
+      overlay1: '#7d8695',
+      overlay0: '#99a3b1',
+      primary: '#2878C8',
+      secondary: '#186878',
+      tertiary: '#4060A8',
+      red: '#B00020',
+      maroon: '#8F3A47',
+      peach: '#933e0d',
+      yellow: '#806800',
+      green: '#287848',
+      teal: '#186878',
+      sky: '#2E86B0',
+      sapphire: '#2070a0',
+      blue: '#2878C8',
+      lavender: '#5A68C8',
+      mauve: '#6A4CB0',
+      pink: '#783064',
+      flamingo: '#A85C48',
+      rosewater: '#9A5870'
     },
     dark: {
-      // Kanagawa Wave (dark)
-      base: '#1f1f28',
-      mantle: '#16161d',
-      crust: '#0d0c0e',
-
-      text: '#dcd7ba',
-      subtext1: '#c8c093',
-      subtext0: '#a6a69c',
-
-      surface2: '#363646',
-      surface1: '#2a2a37',
-      surface0: '#223249',
-
-      overlay2: '#9cabca',
-      overlay1: '#727169',
-      overlay0: '#54546d',
-
-      red: '#c34043',
-      maroon: '#e82424',
-      peach: '#ffa066',
-      yellow: '#c0a36e',
-      green: '#98bb6c',
-      teal: '#7aa89f',
-      sky: '#7fb4ca',
-      sapphire: '#6a9589',
-      blue: '#7e9cd8',
-      lavender: '#938aa9',
-      mauve: '#957fb8',
-      pink: '#d27e99',
-
-      flamingo: '#e98a00',
-      rosewater: '#e46876'
-    }
-  },
-
-  grayscale: {
-    light: {
-      base: '#f5f5f5',
-      mantle: '#ececec',
-      crust: '#e3e3e3',
-
-      text: '#1a1a1a',
-      subtext1: '#2f2f2f',
-      subtext0: '#444444',
-
-      surface2: '#c2c2c2',
-      surface1: '#cecece',
-      surface0: '#dadada',
-
-      overlay2: '#8a8a8a',
-      overlay1: '#999999',
-      overlay0: '#a8a8a8',
-
-      red: '#5f5f5f',
-      maroon: '#4d4d4d',
-      peach: '#737373',
-      yellow: '#7f7f7f',
-      green: '#494949',
-      teal: '#595959',
-      sky: '#696969',
-      sapphire: '#4b4b4b',
-      blue: '#535353',
-      lavender: '#636363',
-      mauve: '#474747',
-      pink: '#6d6d6d',
-
-      flamingo: '#676767',
-      rosewater: '#797979'
-    },
-    dark: {
-      base: '#1c1c1c',
-      mantle: '#141414',
-      crust: '#0c0c0c',
-
-      text: '#e8e8e8',
-      subtext1: '#d1d1d1',
-      subtext0: '#bababa',
-
-      surface2: '#3c3c3c',
-      surface1: '#2e2e2e',
-      surface0: '#242424',
-
-      overlay2: '#7a7a7a',
-      overlay1: '#686868',
-      overlay0: '#565656',
-
-      red: '#c9c9c9',
-      maroon: '#b3b3b3',
-      peach: '#d9d9d9',
-      yellow: '#e5e5e5',
-      green: '#a5a5a5',
-      teal: '#8b8b8b',
-      sky: '#c1c1c1',
-      sapphire: '#939393',
-      blue: '#9d9d9d',
-      lavender: '#b5b5b5',
-      mauve: '#838383',
-      pink: '#d5d5d5',
-
-      flamingo: '#cbcbcb',
-      rosewater: '#dfdfdf'
-    }
-  },
-
-  monokai: {
-    light: {
-      // Monokai-inspired light
-      base: '#fafaf8',
-      mantle: '#f0f0ea',
-      crust: '#e6e6e0',
-
-      text: '#272822',
-      subtext1: '#3d3d35',
-      subtext0: '#555550',
-
-      surface2: '#c5c5bc',
-      surface1: '#d4d4ca',
-      surface0: '#e2e2d8',
-
-      overlay2: '#888880',
-      overlay1: '#979790',
-      overlay0: '#a8a89e',
-
-      red: '#d4154e',
-      maroon: '#a81040',
-      peach: '#c86800',
-      yellow: '#8a7700',
-      green: '#618a12',
-      teal: '#2090a0',
-      sky: '#2898b0',
-      sapphire: '#1878a0',
-      blue: '#4050a8',
-      lavender: '#6845d0',
-      mauve: '#7040c0',
-      pink: '#c81848',
-
-      flamingo: '#c06000',
-      rosewater: '#d81050'
-    },
-    dark: {
-      // Classic Monokai
-      base: '#272822',
-      mantle: '#1e1f1c',
-      crust: '#15161a',
-
-      text: '#f8f8f2',
-      subtext1: '#e2e2d5',
-      subtext0: '#c8c8bb',
-
-      surface2: '#49483e',
-      surface1: '#3e3d32',
-      surface0: '#33332a',
-
-      overlay2: '#75715e',
-      overlay1: '#8a8772',
-      overlay0: '#9e9c86',
-
-      red: '#f92672',
-      maroon: '#cc3366',
-      peach: '#fd971f',
-      yellow: '#e6db74',
-      green: '#a6e22e',
-      teal: '#66d9e8',
-      sky: '#66d9e8',
-      sapphire: '#4db8cc',
-      blue: '#7b86d0',
-      lavender: '#ae81ff',
-      mauve: '#ae81ff',
-      pink: '#f92672',
-
-      flamingo: '#fd971f',
-      rosewater: '#f9c8d8'
-    }
-  },
-
-  dracula: {
-    light: {
-      // Dracula Light (custom light variant)
-      base: '#f8f8f2',
-      mantle: '#e6e6e1',
-      crust: '#d4d4cf',
-
-      text: '#282a36',
-      subtext1: '#44475a',
-      subtext0: '#6272a4',
-
-      surface2: '#bd93f9',
-      surface1: '#d4bfff',
-      surface0: '#e9ddff',
-
-      overlay2: '#6272a4',
-      overlay1: '#7888bd',
-      overlay0: '#8e9ec6',
-
-      red: '#b31d28',
-      maroon: '#d32f2f',
-      peach: '#fa8142',
-      yellow: '#e5c07b',
-      green: '#388e3c',
-      teal: '#50e6c3',
-      sky: '#8be9fd',
-      sapphire: '#5dadf5',
-      blue: '#5e81ac',
-      lavender: '#bd93f9',
-      mauve: '#9966cc',
-      pink: '#ec407a',
-
-      flamingo: '#ffb86c',
-      rosewater: '#ff79c6'
-    },
-    dark: {
-      // Dracula Dark
-      base: '#282a36',
-      mantle: '#21222c',
-      crust: '#191a21',
-
-      text: '#f8f8f2',
-      subtext1: '#e9e9e4',
-      subtext0: '#d4d4cf',
-
-      surface2: '#44475a',
-      surface1: '#3a3c4e',
-      surface0: '#313241',
-
-      overlay2: '#6272a4',
-      overlay1: '#7888bd',
-      overlay0: '#8e9ec6',
-
-      red: '#ff5555',
-      maroon: '#ff6e6e',
-      peach: '#ffb86c',
-      yellow: '#f1fa8c',
-      green: '#50fa7b',
-      teal: '#8be9fd',
-      sky: '#8be9fd',
-      sapphire: '#76daf5',
-      blue: '#6272a4',
-      lavender: '#bd93f9',
-      mauve: '#bd93f9',
-      pink: '#ff79c6',
-
-      flamingo: '#ffb86c',
-      rosewater: '#ff79c6'
+      base: '#0B0E18',
+      mantle: '#141C30',
+      crust: '#080A10',
+      text: '#CDD8E8',
+      subtext1: '#b3c0d1',
+      subtext0: '#8492A6',
+      surface2: '#384860',
+      surface1: '#273654',
+      surface0: '#202D46',
+      overlay2: '#8492A6',
+      overlay1: '#627186',
+      overlay0: '#4f5e75',
+      primary: '#78B4E8',
+      secondary: '#7CD4DC',
+      tertiary: '#A0B8E8',
+      red: '#FF5370',
+      maroon: '#D97080',
+      peach: '#e59970',
+      yellow: '#D4C870',
+      green: '#7CD4A0',
+      teal: '#7CD4DC',
+      sky: '#94DCF0',
+      sapphire: '#7ac4e2',
+      blue: '#78B4E8',
+      lavender: '#A0B8E8',
+      mauve: '#B49CE8',
+      pink: '#E8A0C8',
+      flamingo: '#EFB49A',
+      rosewater: '#E8C8C8'
     }
   }
 };

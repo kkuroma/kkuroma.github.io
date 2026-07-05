@@ -5,14 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog Editor</title>
   <link rel="icon" href="../assets/icon.webp" type="image/webp">
+  <script src="../themes.js"></script>
+  <script src="../theme-boot.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Maple+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../markdown.css">
+  <link href="https://fonts.googleapis.com/css2?family=Maple+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="preload" href="../assets/fonts/GoogleSansFlex.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../website.css">
   <link rel="stylesheet" href="editor.css">
 </head>
 <body>
+  <div id="editor-loading" class="loading-screen loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Loading...</p>
+  </div>
   <div id="app">
     <!-- Navbar -->
     <nav class="navbar">
@@ -25,7 +31,7 @@
         </a>
       </div>
       <div class="navbar-center">
-        <span style="color: var(--blue); font-weight: 600;">Blog Editor</span>
+        <span style="color: var(--primary); font-weight: 600;">Blog Editor</span>
       </div>
       <div class="navbar-right">
         <select id="font-size-select" class="theme-select" title="Font Size"></select>
@@ -139,7 +145,6 @@ console.log('Hello World');
 
   <!-- Scripts -->
   <script defer src="../prism.js/prism.js"></script>
-  <script defer src="../themes.js"></script>
   <script defer src="../svg-library.js"></script>
   <script defer src="../markdown.js"></script>
   <script defer src="../website.js"></script>

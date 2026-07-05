@@ -1,7 +1,7 @@
 const PROJECTS_CONFIG = {
   pageTitle: "Projects - kuroma.dev",
   favicon: "./assets/icon.webp",
-  theme: "catppuccin",
+  theme: "Natsumikan",
   variant: "dark",
   fontSize: "medium",
   navbar: {
@@ -61,7 +61,7 @@ const PROJECTS_CONFIG = {
 
 My current personal website featuring a minimal tiling box design.
 
-**Features:** lightweight and modular dynamically generated web elements via markdown-like declarative configs using a pure html/css/js engine, **[no heavy frameworks]{color:blue}** required.`
+**Features:** lightweight and modular dynamically generated web elements via markdown-like declarative configs using a pure html/css/js engine, **[no heavy frameworks]{color:primary}** required.`
       },
       tags: ["web-development", "frontend"],
       footer: "2026",
@@ -79,7 +79,7 @@ My current personal website featuring a minimal tiling box design.
 
 An installer script for my developer desktop experience on Arch and Hyprland
 
-**Features:** a working **[desktop shell]{color:blue}** and suite of applications, themed dynamically with **[material-you]{color:blue}** colors generated from wallpapers. Features both  **[tiling]{color:blue}** and **[scrolling]{color:blue}** window management`
+**Features:** a working **[desktop shell]{color:primary}** and suite of applications, themed dynamically with **[material-you]{color:primary}** colors generated from wallpapers. Features both  **[tiling]{color:primary}** and **[scrolling]{color:primary}** window management`
       },
       tags: ["linux", "frontend"],
       footer: "2026",

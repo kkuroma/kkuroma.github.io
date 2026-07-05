@@ -47,10 +47,10 @@ My markdown-like parses supports the following formatting syntax:
 
 The site now supports using KaTeX to render mathematical expressions. Text wrapped in the a single dollar sign (\`\$\`) will be treated as an in-line mathematical expression. For example:
 
-- **[Basic equations]{color:blue}**: \`\$1+1=2\$\` --> \$1+1=2\$
-- **[Superscripts and subscripts]{color:blue}**: \`\$x_1=2^2=4\$\` --> \$x_1=2^2=4\$
-- **[Integration and summations]{color:blue}**: \`\$\\sum_{i=1}^n \\int_{0}^{1} x^i dx\$\` --> \$\\sum_{i=1}^n \\int_{0}^{1} x^i dx\$
-- **[Greek alphabets]{color:blue}**: \`\$\\rho\\iota\\eta\\epsilon\\alpha\\rho\\rho\\iota\\epsilon\$\` --> \$\\rho\\iota\\eta\\epsilon\\alpha\\rho\\rho\\iota\\epsilon\$
+- **[Basic equations]{color:primary}**: \`\$1+1=2\$\` --> \$1+1=2\$
+- **[Superscripts and subscripts]{color:primary}**: \`\$x_1=2^2=4\$\` --> \$x_1=2^2=4\$
+- **[Integration and summations]{color:primary}**: \`\$\\sum_{i=1}^n \\int_{0}^{1} x^i dx\$\` --> \$\\sum_{i=1}^n \\int_{0}^{1} x^i dx\$
+- **[Greek alphabets]{color:primary}**: \`\$\\rho\\iota\\eta\\epsilon\\alpha\\rho\\rho\\iota\\epsilon\$\` --> \$\\rho\\iota\\eta\\epsilon\\alpha\\rho\\rho\\iota\\epsilon\$
 
 Text wrapped in the two dollar signs will be treated as a mathematical expression rendered in its own paragraph. For example, 
 
@@ -160,7 +160,7 @@ SVG icons can be rendered in-line with the following syntax \`![SVG](icon_name){
 
 My site currently supports the following icons
 
-| **[Name]{color:blue}** | **[Icon]{color:blue}** | **[Category]{color:blue}** |
+| **[Name]{color:primary}** | **[Icon]{color:primary}** | **[Category]{color:primary}** |
 |------------------------|------------------------|---------------------------|
 | [alert]{color:red}    | ![SVG](alert){fill:var(--red), stroke:var(--red), 24, 24} | Alert |
 | [arrow]{color:maroon} | ![SVG](arrow){fill:var(--maroon), stroke:var(--maroon), 24, 24} | Navigation |
@@ -204,7 +204,7 @@ Iframes (interactive frame) uses identical syntaxes to that of images \`![Iframe
 
 ---
 
-That's everything I have to offer with this site! White I made this markdown editor for myself to more easily write blogs, feel free to use it as your online markdown renderer. Happy writing! ![SVG](blog){stroke:var(--blue), 20, 20}`
+That's everything I have to offer with this site! White I made this markdown editor for myself to more easily write blogs, feel free to use it as your online markdown renderer. Happy writing! ![SVG](blog){stroke:var(--primary), 20, 20}`
  };
  window.BLOG_CONFIG = BLOG_CONFIG;
  })();

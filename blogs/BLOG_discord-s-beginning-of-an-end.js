@@ -6,7 +6,7 @@ const BLOG_CONFIG = {
   tags: ["opinion", "rant"],
   preview_img: null,
   pinned: false,
-  content: `Soooooo, I have several work/project related blogs on queue, but here I am writing an opinion-based rant post. Just what exactly happened? Good'ol **[Discord]{color:blue}** now requires you hand them **[your government identification]{rainbow}** to use their services, and this isn't the worst part!
+  content: `Soooooo, I have several work/project related blogs on queue, but here I am writing an opinion-based rant post. Just what exactly happened? Good'ol **[Discord]{color:primary}** now requires you hand them **[your government identification]{rainbow}** to use their services, and this isn't the worst part!
 
 #TOC
 
@@ -15,7 +15,7 @@ const BLOG_CONFIG = {
 ## The UK Online Safety Act
 
 - **[2019/04/08:]{color:red}** The UK parliament introduced the **[Online Harms White Paper](https://hansard.parliament.uk/commons/2019-04-08/debates/0B8572FF-E3B5-4585-9497-4AE6611D434D/OnlineHarmsWhitePaper)** as a result Mr. Jeremy Wright's debate in the parliament. As per the official statement, Wright cited the dominance (over 90%) of adults in the online world as a potential source of harm (more explicitly, cyber-bullying, grooming, and exploitation) for children. He stated that the government should take proactive actions in regulating online content via the introduction of a new *regulator* entity in the online world.
-- **[2021/05/12:]{color:red}** The UK parliament passed a **[draft](https://hansard.parliament.uk/Commons/2021-05-12/debates/21051242000021/OnlineSafetyBillUpdate)** of the **[Online Safety Act]{color:blue}**. While the draft similarly cited protecting children as its primary goal, the responsibility of safeguarding the vulnerable was notably placed on companies, rather than a government-controlled regulator entity.
+- **[2021/05/12:]{color:red}** The UK parliament passed a **[draft](https://hansard.parliament.uk/Commons/2021-05-12/debates/21051242000021/OnlineSafetyBillUpdate)** of the **[Online Safety Act]{color:primary}**. While the draft similarly cited protecting children as its primary goal, the responsibility of safeguarding the vulnerable was notably placed on companies, rather than a government-controlled regulator entity.
 - **[2023/10/26:]{color:red}** The **[Finished Online Safety Act](https://www.gov.uk/government/collections/online-safety-act)** received Royal Assent. As stated in the 2021 draft, the act places all responsibilities of regulating online content to social media providers. The British office of communication (OfCom) was given the task of overseeing and monitoring these platforms.
 - **[2025/03/17:]{color:red}** Phase 1 of the Online Safety Act took effect, requiring all online platforms to regulate potentially illegal contents.
 - **[2025/07/25:]{color:red}** Phase 2 of the UK Online Safety Act took effect. The **[Protection of Children Codes of Practice](https://www.whitecase.com/insight-alert/uk-online-safety-act-protection-children-codes-come-force)** became enforceable, requiring platforms with child users to implement "highly effective age assurance" (HEAA) to prevent minors from accessing pornography and harmful content.

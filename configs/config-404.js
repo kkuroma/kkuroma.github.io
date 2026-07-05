@@ -1,7 +1,7 @@
 const NOT_FOUND_CONFIG = {
   pageTitle: "404 - Page Not Found",
   favicon: "./assets/icon.webp",
-  theme: "catppuccin",
+  theme: "Natsumikan",
   variant: "dark",
   fontSize: "medium",
   navbar: {
@@ -35,10 +35,9 @@ const NOT_FOUND_CONFIG = {
       h: 2,
       content: {
         markdown: `
-The page you're looking for might have been moved, deleted, or never existed. 
+The page you're looking for might have been moved, deleted, or never existed.
 
-
-**Check the URL** to make sure address is spelled correctly, or **use the navigation** to check out other parts of my site!`
+**Check the URL** for typos, or **use the navigation** to explore the rest of my site!`
       }
     },
     {
@@ -46,7 +45,7 @@ The page you're looking for might have been moved, deleted, or never existed.
       title: "",
       type: "markdown",
       href: "#/",
-      image_url: "svg:home:var(--blue)",
+      image_url: "svg:home:var(--primary)",
       w: 2,
       h: 2,
       content: {
@@ -59,7 +58,7 @@ The page you're looking for might have been moved, deleted, or never existed.
       title: "",
       type: "markdown",
       href: "#/projects",
-      image_url: "svg:document:var(--blue)",
+      image_url: "svg:document:var(--primary)",
       w: 2,
       h: 2,
       content: {
@@ -72,7 +71,7 @@ The page you're looking for might have been moved, deleted, or never existed.
       title: "",
       type: "markdown",
       href: "#/blog",
-      image_url: "svg:blog:var(--blue)",
+      image_url: "svg:blog:var(--primary)",
       w: 2,
       h: 2,
       content: {
@@ -85,7 +84,7 @@ The page you're looking for might have been moved, deleted, or never existed.
       title: "",
       type: "markdown",
       href: "mailto:contact@kuroma.dev",
-      image_url: "svg:email:var(--blue)",
+      image_url: "svg:email:var(--primary)",
       w: 2,
       h: 2,
       content: {

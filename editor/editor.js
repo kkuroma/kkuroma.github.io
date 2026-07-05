@@ -6,9 +6,12 @@
 class BlogEditor {
   constructor() {
     this.mode = 'edit'; // 'edit' or 'preview' mode
-    this.theme = 'catppuccin';
-    this.variant = 'dark';
-    this.fontSize = 'medium';
+    // Share theme/variant/fontSize with the main site via StateManager (website.js)
+    const saved = window.stateManager ? window.stateManager.getState() : {};
+    this.theme = (typeof THEMES !== 'undefined' && THEMES[saved.theme]) ? saved.theme : 'Natsumikan';
+    this.variantMode = saved.variant || 'dark';
+    this.variant = this.getEffectiveVariant();
+    this.fontSize = saved.fontSize || 'medium';
     this.metadata = {
       title: '',
       date_created: '',
@@ -30,6 +33,8 @@ class BlogEditor {
     this.attachEventListeners();
     this.setDefaultDate();
     this.updateCharCount();
+    const loading = document.getElementById('editor-loading');
+    if (loading) loading.remove();
   }
 
   populateDropdowns() {
@@ -52,7 +57,7 @@ class BlogEditor {
 
     // theme
     const themeSelect = document.getElementById('theme-select');
-    const availableThemes = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['catppuccin'];
+    const availableThemes = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['Natsumikan'];
     availableThemes.forEach(theme => {
       const option = document.createElement('option');
       option.value = theme;
@@ -72,9 +77,16 @@ class BlogEditor {
       const option = document.createElement('option');
       option.value = variant.value;
       option.textContent = variant.label;
-      option.selected = variant.value === this.variant;
+      option.selected = variant.value === this.variantMode;
       variantSelect.appendChild(option);
     });
+  }
+
+  getEffectiveVariant() {
+    if (this.variantMode === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return this.variantMode;
   }
 
   applyTheme() {
@@ -94,7 +106,7 @@ class BlogEditor {
       'large': '18px',
       'xlarge': '20px'
     };
-    root.style.fontSize = fontSizes[this.fontSize] || fontSizes['medium'];
+    root.style.setProperty('--font-size-base', fontSizes[this.fontSize] || fontSizes['medium']);
   }
 
   setDefaultDate() {
@@ -134,20 +146,24 @@ class BlogEditor {
       this.updateCharCount();
     });
 
-    // Theme controls
+    // Theme controls (persisted so the main site picks them up too)
     document.getElementById('font-size-select').addEventListener('change', (e) => {
       this.fontSize = e.target.value;
       this.applyFontSize();
+      if (window.stateManager) window.stateManager.setState('fontSize', this.fontSize);
     });
 
     document.getElementById('theme-select').addEventListener('change', (e) => {
       this.theme = e.target.value;
       this.applyTheme();
+      if (window.stateManager) window.stateManager.setState('theme', this.theme);
     });
 
     document.getElementById('variant-select').addEventListener('change', (e) => {
-      this.variant = e.target.value;
+      this.variantMode = e.target.value;
+      this.variant = this.getEffectiveVariant();
       this.applyTheme();
+      if (window.stateManager) window.stateManager.setState('variant', this.variantMode);
     });
   }
 
@@ -219,7 +235,7 @@ class BlogEditor {
     header.className = 'preview-header';
     const title = document.createElement('h1');
     title.textContent = this.metadata.title || 'Untitled Blog Post';
-    title.style.color = 'var(--blue)';
+    title.style.color = 'var(--primary)';
     const subtitle = document.createElement('p');
     subtitle.textContent = this.generateSubtitle();
     subtitle.style.color = 'var(--subtext0)';

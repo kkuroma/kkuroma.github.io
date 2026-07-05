@@ -1,7 +1,7 @@
 const HOME_CONFIG = {
   pageTitle: "Home - kuroma.dev",
   favicon: "./assets/icon.webp",
-  theme: "catppuccin",
+  theme: "Natsumikan",
   variant: "dark",
   fontSize: "medium",
   navbar: {
@@ -16,7 +16,7 @@ const HOME_CONFIG = {
   },
   header: {
     title: "Hi, I'm KK!",
-    subtitle: "Data Scientist | Tech Enthusiast | Origami Artist",
+    subtitle: "Data Scientist | Homelabber | Origami Artist",
     avatar: ""
   },
   selectionArea: {
@@ -45,11 +45,11 @@ const HOME_CONFIG = {
       image_url: "./assets/profile.jpg",
       content: {
         markdown: `
-My name is **[KK Thuwajit]{color:yellow}**, but you might know me online as **[KKuroma]{color:green}** as well.  
+My name is **[KK Thuwajit]{color:yellow}**, but you might know me online as **[KKuroma]{color:green}** as well.
 
-I recently graduated with a CS and math degree from **[UW Madison]{color:red}**, and my primary research interest lies in **[biomedical data sciences]{color:mauve}**.
+I graduated with a CS and math degree from **[UW Madison]{color:red}**, and am pursuing a masters degree at **[UCLA]{color:mauve}**.
 
-I also like to tinker with my **[home server]{color:lavender}**, play the **[piano]{color:blue}**, and design **[origami]{color:teal}** models.`
+Other than that, I also play the **[piano]{color:primary}** and design **[origami]{color:teal}** models.`
 
       },
       tags: ["Important"],
@@ -65,9 +65,9 @@ I also like to tinker with my **[home server]{color:lavender}**, play the **[pia
       image_url: "",
       content: {
         markdown: `
-I made this website as a portfolio, blog, and a place to host my various web services. Heavily inspired by **[hyprland](https://hypr.land)** and **[haruto's website](https://harutohiroki.com)**, this website parses **[markdown-like]{color:blue}** texts into web elements. I hope my website showcases how this minimalist layout could be used to host project sites, blogs, or anything informative.
+I made this website as a portfolio, blog, and an entry point for my homelab. Heavily inspired by tiling window managers like **[hyprland](https://hypr.land)** and **[haruto's website](https://harutohiroki.com)**, this website parses **[markdown-like]{color:primary}** texts into web elements. Each page on this site is created from the same markdown blocks, sculpted into a coherent site!
 
-Learn more about my website **[here](https://github.com/kkuroma/kkuroma.github.io)**, and create your own blogs **[here](./editor/index.html)**.
+Learn more about my website **[at the repository](https://git.kuroma.dev/kkuroma/kuroma.dev)**, and create your own blogs **[with the online editor](./editor/index.html)**.
 
 Anyways, feel free to check around and make yourself at home!`
       },
@@ -85,7 +85,7 @@ Anyways, feel free to check around and make yourself at home!`
       image_url: "",
       content: {
         markdown: `
-As of 2026, I am currently working on **[medical image registration]{color:blue}** research while awaiting my PhD decisions. Amidst the rampant subscriptions and data collection spree, I'm in the process of **[self-hosting]{color:blue}** as many services as I could, becoming more digitally independent while mastering linux, docker, and networking.
+I have a professional background in **[AI/ML]{color:green}** and **[data science]{color:yellow}**. About a year ago, I've extended my interests into self-hosting the data science systems I've built. Coming from a belief that technology should be open and transparent, I am building my **[homelab]{color:lavender}** and deploying local **[AI agents]{color:blue}** to prove digital sovereignty isn't just a myth!
         `
       },
       tags: ["Important"],
@@ -101,7 +101,7 @@ As of 2026, I am currently working on **[medical image registration]{color:blue}
       href: "",
       image_url: "",
       content: {
-        markdown: "**![SVG](star){fill:var(--blue), stroke:var(--blue)} [News!]{color:blue}** Now online at @kuroma:matrix.isomorphic.to"
+        markdown: "**![SVG](git){fill:var(--primary), stroke:var(--primary)} [Projects are self-hosted]{color:primary}** using forgejo at my own git instance **[here](https://git.kuroma.dev)**!"
       },
       tags: ["News"],
       footer: "@kkuroma"
@@ -114,7 +114,7 @@ As of 2026, I am currently working on **[medical image registration]{color:blue}
       h: 2,
       pinned: false,
       href: "https://github.com/kkuroma",
-      image_url: "svg:github:var(--blue)",
+      image_url: "svg:github:var(--primary)",
       content: {
         markdown: ""
       },
@@ -129,7 +129,7 @@ As of 2026, I am currently working on **[medical image registration]{color:blue}
       h: 2,
       pinned: false,
       href: "mailto:contact@kuroma.dev",
-      image_url: "svg:email:var(--blue)",
+      image_url: "svg:email:var(--primary)",
       content: {
         markdown: ""
       },
@@ -144,7 +144,7 @@ As of 2026, I am currently working on **[medical image registration]{color:blue}
       h: 2,
       pinned: false,
       href: "https://linkedin.com/in/kkuroma",
-      image_url: "svg:linkedin:var(--blue)",
+      image_url: "svg:linkedin:var(--primary)",
       content: {
         markdown: ""
       },
@@ -159,7 +159,7 @@ As of 2026, I am currently working on **[medical image registration]{color:blue}
       h: 2,
       pinned: false,
       href: "public/resume.pdf",
-      image_url: "svg:resume:var(--blue)",
+      image_url: "svg:resume:var(--primary)",
       content: {
         markdown: ""
       },

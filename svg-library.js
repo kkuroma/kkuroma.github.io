@@ -5,7 +5,7 @@
  * ![SVG](name){color1:value1, color2:value2, width, height}
  *
  * Example:
- * ![SVG](github){fill:var(--blue), 24, 24}
+ * ![SVG](github){fill:var(--primary), 24, 24}
  * ![SVG](email){primary:#ffffff, secondary:#000000, 32, 32}
  */
 
@@ -113,6 +113,31 @@ const SVG_LIBRARY = {
   pin: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <circle cx="12" cy="10" r="3" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
+  cloud: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
+  lock: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="3" y="11" width="18" height="11" rx="2" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M7 11V7a5 5 0 0110 0v4" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
+  git: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 3v12M18 9a9 9 0 01-9 9" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="18" cy="6" r="3" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="6" cy="18" r="3" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
+  search: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="11" cy="11" r="8" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M21 21l-4.35-4.35" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
+  clipboard: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="8" y="2" width="8" height="4" rx="1" stroke="{{stroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`
 };
 
