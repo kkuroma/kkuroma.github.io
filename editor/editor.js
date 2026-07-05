@@ -38,48 +38,32 @@ class BlogEditor {
   }
 
   populateDropdowns() {
+    const fill = (id, options, selected) => {
+      const select = document.getElementById(id);
+      options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.label;
+        option.selected = opt.value === selected;
+        select.appendChild(option);
+      });
+    };
 
-    // font size
-    const fontSizeSelect = document.getElementById('font-size-select');
-    const fontSizes = [
+    fill('font-size-select', [
       { value: 'small', label: 'Small' },
       { value: 'medium', label: 'Medium' },
       { value: 'large', label: 'Large' },
       { value: 'xlarge', label: 'XLarge' }
-    ];
-    fontSizes.forEach(size => {
-      const option = document.createElement('option');
-      option.value = size.value;
-      option.textContent = size.label;
-      option.selected = size.value === this.fontSize;
-      fontSizeSelect.appendChild(option);
-    });
+    ], this.fontSize);
 
-    // theme
-    const themeSelect = document.getElementById('theme-select');
     const availableThemes = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['Natsumikan'];
-    availableThemes.forEach(theme => {
-      const option = document.createElement('option');
-      option.value = theme;
-      option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
-      option.selected = theme === this.theme;
-      themeSelect.appendChild(option);
-    });
+    fill('theme-select', availableThemes.map(t => ({ value: t, label: t })), this.theme);
 
-    // variant
-    const variantSelect = document.getElementById('variant-select');
-    const variants = [
+    fill('variant-select', [
       { value: 'dark', label: 'Dark' },
       { value: 'light', label: 'Light' },
       { value: 'system', label: 'System' }
-    ];
-    variants.forEach(variant => {
-      const option = document.createElement('option');
-      option.value = variant.value;
-      option.textContent = variant.label;
-      option.selected = variant.value === this.variantMode;
-      variantSelect.appendChild(option);
-    });
+    ], this.variantMode);
   }
 
   getEffectiveVariant() {
@@ -237,7 +221,7 @@ class BlogEditor {
     title.textContent = this.metadata.title || 'Untitled Blog Post';
     title.style.color = 'var(--primary)';
     const subtitle = document.createElement('p');
-    subtitle.textContent = this.generateSubtitle();
+    subtitle.textContent = this.dateLine(false);
     subtitle.style.color = 'var(--subtext0)';
     header.appendChild(title);
     header.appendChild(subtitle);
@@ -278,7 +262,7 @@ class BlogEditor {
     }
 
     const footerText = document.createElement('div');
-    footerText.textContent = this.generateFooter();
+    footerText.textContent = this.dateLine(true);
     footerText.style.color = 'var(--subtext0)';
     footerText.style.marginTop = '1rem';
     footer.appendChild(footerText);
@@ -301,40 +285,18 @@ class BlogEditor {
     container.appendChild(backToTop);
   }
 
-  generateSubtitle() {
+  // Date + read-time line; the subtitle and footer differ only in how the
+  // optional "Updated" date is wrapped
+  dateLine(parenUpdated) {
     const date = this.metadata.date_created
-      ? new Date(this.metadata.date_created).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })
+      ? new Date(this.metadata.date_created).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
       : 'No date';
-
-    const updated = this.metadata.date_updated
-      ? ` · Updated ${new Date(this.metadata.date_updated).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-      : '';
-
-    const readTime = this.calculateReadingTime(this.content);
-
-    return `${date}${updated} · ${readTime} read`;
-  }
-
-  generateFooter() {
-    const date = this.metadata.date_created
-      ? new Date(this.metadata.date_created).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })
-      : 'No date';
-
-    const updated = this.metadata.date_updated
-      ? ` (Updated ${new Date(this.metadata.date_updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })})`
-      : '';
-
-    const readTime = this.calculateReadingTime(this.content);
-
-    return `${date}${updated} · ${readTime} read`;
+    let updated = '';
+    if (this.metadata.date_updated) {
+      const short = new Date(this.metadata.date_updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      updated = parenUpdated ? ` (Updated ${short})` : ` · Updated ${short}`;
+    }
+    return `${date}${updated} · ${this.calculateReadingTime(this.content)} read`;
   }
 
   collectMetadata() {

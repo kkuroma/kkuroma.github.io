@@ -39,6 +39,20 @@ class BlogLoader {
     }
   }
 
+  // Shared chrome for both generated pages
+  baseNavbar() {
+    return {
+      navigation: [
+        { text: "Home", href: "#/" },
+        { text: "Projects", href: "#/projects" },
+        { text: "Blog", href: "#/blog" },
+        { text: "Origami", href: "#/origami" },
+        { text: "Services", href: "#/services" }
+      ],
+      centerText: "Kuroma.dev - Blogs"
+    };
+  }
+
   generateBlogListingConfig() {
     const boxes = this.blogs.map(blog => ({
       id: `blog-${blog.slug}`,
@@ -64,16 +78,7 @@ class BlogLoader {
       theme: "Natsumikan",
       variant: "dark",
       fontSize: "medium",
-      navbar: {
-        navigation: [
-          { text: "Home", href: "#/" },
-          { text: "Projects", href: "#/projects" },
-          { text: "Blog", href: "#/blog" },
-          { text: "Origami", href: "#/origami" },
-          { text: "Services", href: "#/services" } 
-        ],
-        centerText: "Kuroma.dev - Blogs"
-      },
+      navbar: this.baseNavbar(),
       header: {
         title: "My Blogs",
         subtitle: "Welcome to my corner of the internet",
@@ -170,16 +175,7 @@ class BlogLoader {
       theme: "Natsumikan",
       variant: "dark",
       fontSize: "medium",
-      navbar: {
-        navigation: [
-          { text: "Home", href: "#/" },
-          { text: "Projects", href: "#/projects" },
-          { text: "Blog", href: "#/blog" },
-          { text: "Origami", href: "#/origami" },
-          { text: "Services", href: "#/services" } 
-        ],
-        centerText: "Kuroma.dev - Blogs"
-      },
+      navbar: this.baseNavbar(),
       header: {
         title: blog.title,
         subtitle: this.generateSubtitle(blog),

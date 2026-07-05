@@ -74,6 +74,30 @@ class MarkdownParser {
     return text.replace(/[&<>"']/g, char => escapeMap[char]);
   }
 
+  /* Heading text -> anchor id (shared by headings and the TOC) */
+  slugify(text) {
+    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  /* Split "{caption, w, h}" media params into caption text and numeric size */
+  parseMediaParams(params) {
+    const parts = (params || '').split(',').map(p => p.trim());
+    const numbers = parts.filter(p => /^\d+$/.test(p));
+    const text = parts.filter(p => p && !/^\d+$/.test(p));
+    return { caption: text.join(', '), width: numbers[0] || '', height: numbers[1] || '' };
+  }
+
+  /* Wrap a media element in <figure> when a caption is given */
+  withCaption(el, caption) {
+    if (!caption) return el.outerHTML;
+    const figure = document.createElement('figure');
+    figure.appendChild(el);
+    const figcaption = document.createElement('figcaption');
+    figcaption.textContent = caption;
+    figure.appendChild(figcaption);
+    return figure.outerHTML;
+  }
+
   /* Sanitize URLs */
   sanitizeUrl(url) {
     if (!url || typeof url !== 'string') return '#';
@@ -112,22 +136,13 @@ class MarkdownParser {
     let result = '';
     for (const item of items) {
       if (item.is_code) {
-        // Code blocks - just wrap, no markdown processing
         result += this.renderCodeBlock(item.content, item.language);
       } else if (item.is_math_block) {
         result += this.renderMathBlock(item.content);
       } else if (item.is_toc) {
-        // TOC placeholder - substitute with pre-generated TOC
         result += this.tocHTML;
-      } else if (item.already_rendered) {
-        // Already rendered HTML (from inline code segments) - needs block type checking
-        result += this.renderParagraph(item.content, item.has_inline_html);
-      } else if (item.is_new_paragraph) {
-        // Regular content - apply markdown
-        result += this.renderParagraph(item.content, item.has_inline_html);
       } else {
-        // Inline content (shouldn't happen in this architecture but handle anyway)
-        result += this.processInline(item.content);
+        result += this.renderParagraph(item.content, item.has_inline_html);
       }
     }
 
@@ -206,21 +221,11 @@ class MarkdownParser {
     // Now process each part
     for (const part of expandedParts) {
       if (part.type === 'code_block') {
-        items.push({
-          content: part.content,
-          language: part.language,
-          is_code: true,
-          is_new_paragraph: true
-        });
+        items.push({ content: part.content, language: part.language, is_code: true });
       } else if (part.type === 'math_block') {
-        items.push({
-          content: part.content,
-          is_math_block: true,
-          is_new_paragraph: true
-        });
+        items.push({ content: part.content, is_math_block: true });
       } else {
-        const textItems = this.parseTextPart(part.content);
-        items.push(...textItems);
+        items.push(...this.parseTextPart(part.content));
       }
     }
 
@@ -239,12 +244,7 @@ class MarkdownParser {
 
       // Check if this paragraph is exactly #TOC
       if (para.trim() === '#TOC') {
-        items.push({
-          content: '#TOC',
-          is_code: false,
-          is_new_paragraph: true,
-          is_toc: true
-        });
+        items.push({ content: '#TOC', is_toc: true });
         continue;
       }
 
@@ -282,34 +282,20 @@ class MarkdownParser {
 
       // If no inline code, just add the paragraph for later processing
       if (!hasInlineCode) {
-        items.push({
-          content: para.trim(),
-          is_code: false,
-          is_new_paragraph: true
-        });
+        items.push({ content: para.trim() });
       } else {
-        // Paragraph has inline code - process segments and apply markdown to non-code parts
+        // Paragraph has inline code: render <code> segments (unescape the
+        // sanitization pass, then re-escape) and apply inline markdown to the
+        // rest; has_inline_html tells renderParagraph to skip processInline
         let rendered = '';
         for (const seg of segments) {
           if (seg.type === 'inline_code') {
-            // Convert code to HTML <code> tag
-            // Content was already sanitized (HTML entities), unescape first then re-escape
-            // so that e.g. < shows as < not &lt;
             rendered += `<code>${this.escapeHtml(this.unescapeHtml(seg.content))}</code>`;
           } else {
-            // Apply markdown rendering to text segments (images, SVGs, iframes, hyperlinks, bold, italic, etc.)
             rendered += this.processInline(seg.content);
           }
         }
-
-        // Mark as already rendered HTML - skip processInline in renderParagraph
-        items.push({
-          content: rendered,
-          is_code: false,
-          is_new_paragraph: true,
-          already_rendered: true,
-          has_inline_html: true
-        });
+        items.push({ content: rendered, has_inline_html: true });
       }
     }
 
@@ -324,7 +310,7 @@ class MarkdownParser {
     const highlightedCode = this.highlightCode(rawCode, language);
     const langClass = language ? `language-${language}` : '';
     // Store raw code as a data attribute for the copy button (escaped for HTML attribute)
-    const escapedRaw = rawCode.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const escapedRaw = this.escapeHtml(rawCode);
     const copyIcon = typeof window !== 'undefined' && window.getSVG ? window.getSVG('copy', { stroke: 'currentColor' }, 16, 16) : '';
     const checkIcon = typeof window !== 'undefined' && window.getSVG ? window.getSVG('check', { stroke: 'currentColor' }, 16, 16) : '';
     const escapedCopyIcon = copyIcon.replace(/"/g, '&quot;');
@@ -357,26 +343,15 @@ class MarkdownParser {
     text = text.trim();
     if (!text) return '';
 
-    // Check for special block types in order: blockquotes, then lists, then tables
+    // Check for special block types in order: headings, hr, image rows,
+    // blockquotes, lists, tables
 
-    // Headings (check first as they're unambiguous)
-    if (text.startsWith('# ')) {
-      const headingText = text.slice(2);
-      const id = headingText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const heading = text.match(/^(#{1,3}) /);
+    if (heading) {
+      const level = heading[1].length;
+      const headingText = text.slice(level + 1);
       const content = hasInlineHtml ? headingText : this.processInline(headingText);
-      return `<h1 id="${id}">${content}</h1>\n`;
-    }
-    if (text.startsWith('## ')) {
-      const headingText = text.slice(3);
-      const id = headingText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      const content = hasInlineHtml ? headingText : this.processInline(headingText);
-      return `<h2 id="${id}">${content}</h2>\n`;
-    }
-    if (text.startsWith('### ')) {
-      const headingText = text.slice(4);
-      const id = headingText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      const content = hasInlineHtml ? headingText : this.processInline(headingText);
-      return `<h3 id="${id}">${content}</h3>\n`;
+      return `<h${level} id="${this.slugify(headingText)}">${content}</h${level}>\n`;
     }
 
     // Horizontal rule
@@ -389,7 +364,7 @@ class MarkdownParser {
       return this.parseImageRow(text);
     }
 
-    // 1. Blockquote (check first)
+    // Blockquote
     if (text.startsWith('&gt; ')) {
       const lines = text.split('\n').map(line =>
         line.startsWith('&gt; ') ? line.slice(5) : line
@@ -398,7 +373,7 @@ class MarkdownParser {
       return `<blockquote>${content}</blockquote>\n`;
     }
 
-    // 2. Lists (check second - both unordered and ordered)
+    // Lists (both unordered and ordered)
     if (text.match(/^- /m)) {
       return this.parseList(text, 'ul', hasInlineHtml);
     }
@@ -406,7 +381,7 @@ class MarkdownParser {
       return this.parseList(text, 'ol', hasInlineHtml);
     }
 
-    // 3. Table (check third)
+    // Table
     if (text.includes('|') && text.split('\n').length >= 2) {
       const lines = text.split('\n');
       if (lines.length >= 2 && lines[1].match(/^\s*\|?[\s:-]+\|[\s|:-]+\|?\s*$/)) {
@@ -489,74 +464,26 @@ class MarkdownParser {
 
     // Images (not in a row)
     result = result.replace(/!\[Image\]\(([^)]+)\)(?:\{([^}]+)\})?/g, (_, url, params) => {
-      const safeUrl = this.sanitizeUrl(url);
-      let caption = '';
-      let width = '';
-      let height = '';
-
-      if (params) {
-        const parts = params.split(',').map(p => p.trim());
-        const numbers = parts.filter(p => /^\d+$/.test(p));
-        const text = parts.filter(p => !/^\d+$/.test(p));
-
-        if (text.length > 0) caption = text.join(', ');
-        if (numbers.length >= 1) width = numbers[0];
-        if (numbers.length >= 2) height = numbers[1];
-      }
-
+      const { caption, width, height } = this.parseMediaParams(params);
       const img = document.createElement('img');
-      img.src = safeUrl;
+      img.src = this.sanitizeUrl(url);
       img.alt = caption || 'Image';
       if (width) img.width = width;
       if (height) img.height = height;
-
-      if (caption) {
-        const figure = document.createElement('figure');
-        figure.appendChild(img);
-        const figcaption = document.createElement('figcaption');
-        figcaption.textContent = caption;
-        figure.appendChild(figcaption);
-        return figure.outerHTML;
-      }
-
-      return img.outerHTML;
+      return this.withCaption(img, caption);
     });
 
     // Iframes
     result = result.replace(/!\[Iframe\]\(([^)]+)\)(?:\{([^}]+)\})?/g, (_, url, params) => {
-      const safeUrl = this.sanitizeUrl(url);
-      let title = '';
-      let width = '';
-      let height = '';
-      
-      if (params) {
-        const parts = params.split(',').map(p => p.trim());
-        const numbers = parts.filter(p => /^\d+$/.test(p));
-        const text = parts.filter(p => !/^\d+$/.test(p));
-        
-        if (text.length > 0) title = text.join(', ');
-        if (numbers.length >= 1) width = numbers[0];
-        if (numbers.length >= 2) height = numbers[1];
-      }
-      
+      const { caption, width, height } = this.parseMediaParams(params);
       const iframe = document.createElement('iframe');
-      iframe.src = safeUrl;
-      iframe.title = title || 'Embedded content';
+      iframe.src = this.sanitizeUrl(url);
+      iframe.title = caption || 'Embedded content';
       if (width) iframe.width = width;
       if (height) iframe.height = height;
       iframe.setAttribute('frameborder', '0');
       iframe.setAttribute('allowfullscreen', '');
-      
-      if (title) {
-        const figure = document.createElement('figure');
-        figure.appendChild(iframe);
-        const figcaption = document.createElement('figcaption');
-        figcaption.textContent = title;
-        figure.appendChild(figcaption);
-        return figure.outerHTML;
-      }
-      
-      return iframe.outerHTML;
+      return this.withCaption(iframe, caption);
     });
 
     // Bold, italic, underline, strikethrough
@@ -581,23 +508,9 @@ class MarkdownParser {
       const match = img.match(/!\[Image\]\(([^)]+)\)(?:\{([^}]+)\})?/);
       if (!match) return '';
 
-      const url = this.sanitizeUrl(match[1]);
-      let caption = '';
-      let width = '';
-      let height = '';
-
-      if (match[2]) {
-        const parts = match[2].split(',').map(p => p.trim());
-        const numbers = parts.filter(p => /^\d+$/.test(p));
-        const text = parts.filter(p => !/^\d+$/.test(p));
-
-        if (text.length > 0) caption = text.join(', ');
-        if (numbers.length >= 1) width = numbers[0];
-        if (numbers.length >= 2) height = numbers[1];
-      }
-
+      const { caption, width, height } = this.parseMediaParams(match[2]);
       const imgEl = document.createElement('img');
-      imgEl.src = url;
+      imgEl.src = this.sanitizeUrl(match[1]);
       imgEl.alt = caption || 'Image';
       if (width) imgEl.width = width;
       if (height) imgEl.height = height;
@@ -605,13 +518,11 @@ class MarkdownParser {
       const container = document.createElement('div');
       container.className = 'image-row-item';
       container.appendChild(imgEl);
-
       if (caption) {
         const figcaption = document.createElement('figcaption');
         figcaption.textContent = caption;
         container.appendChild(figcaption);
       }
-
       return container.outerHTML;
     }).join('');
 
@@ -707,31 +618,18 @@ class MarkdownParser {
   /* Generate TOC */
   generateTOC(text) {
     const headings = [];
-    const lines = text.split('\n');
     let inCodeBlock = false;
 
-    let i = 0;
-    for (const line of lines) {
-      // Track code block boundaries
+    for (const line of text.split('\n')) {
       if (line.trim().startsWith('```')) {
         inCodeBlock = !inCodeBlock;
         continue;
       }
-
-
-      // Skip lines inside code blocks
       if (inCodeBlock) continue;
 
-      const h1Match = line.match(/^# (.+)$/);
-      const h2Match = line.match(/^## (.+)$/);
-      const h3Match = line.match(/^### (.+)$/);
-
-      if (h1Match) headings.push({ level: 1, text: h1Match[1] });
-      else if (h2Match) headings.push({ level: 2, text: h2Match[1] });
-      else if (h3Match) headings.push({ level: 3, text: h3Match[1] });
+      const match = line.match(/^(#{1,3}) (.+)$/);
+      if (match) headings.push({ level: match[1].length, text: match[2] });
     }
-
-    //console.log("headings: ", headings)
 
     if (headings.length === 0) {
       return '<div class="toc-empty">No headings found for table of contents.</div>';
@@ -741,7 +639,7 @@ class MarkdownParser {
     let currentLevel = 0;
 
     for (const heading of headings) {
-      const id = heading.text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const id = this.slugify(heading.text);
 
       while (currentLevel < heading.level) {
         if (currentLevel > 0) tocHTML += '<ul class="toc-list">\n';
@@ -781,9 +679,7 @@ class MarkdownParser {
     if (typeof katex !== 'undefined') {
       try {
         return `<div class="katex-display">${katex.renderToString(raw, { displayMode: true, throwOnError: false })}</div>\n`;
-      } catch (e) {
-        return `<p>$$${this.escapeHtml(raw)}$$</p>\n`;
-      }
+      } catch (e) { /* fall through to plain output */ }
     }
     return `<p>$$${this.escapeHtml(raw)}$$</p>\n`;
   }
@@ -811,11 +707,6 @@ class MarkdownParser {
     if (typeof THEMES !== 'undefined') {
       this.colors = THEMES[theme][variant];
     }
-  }
-
-  /* Alias for compatibility */
-  parseInline(text) {
-    return this.processInline(text);
   }
 }
 

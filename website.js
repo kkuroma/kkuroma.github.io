@@ -90,10 +90,6 @@ class StateManager {
     state[key] = value;
     localStorage.setItem(this.storageKey, JSON.stringify(state));
   }
-
-  clearState() {
-    localStorage.removeItem(this.storageKey);
-  }
 }
 
 window.router = new Router();
@@ -143,8 +139,7 @@ class WebsiteGenerator {
         this._resizeTimer = setTimeout(() => this.reRenderContent(), 150);
       }
     });
-    // re-measure after layout-shifting events (webfont swap, late resources) —
-    // text metrics change and boxes may need more row units
+    // re-run cosmetic settle after layout-shifting events (webfont swap, late resources)
     requestAnimationFrame(() => this.settleBoxes());
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => requestAnimationFrame(() => this.settleBoxes()));
@@ -170,13 +165,7 @@ class WebsiteGenerator {
     // handle scroll for back-to-top button
     window.addEventListener('scroll', () => {
       const backToTop = document.getElementById('back-to-top');
-      if (backToTop) {
-        if (window.scrollY > 300) {
-          backToTop.classList.add('visible');
-        } else {
-          backToTop.classList.remove('visible');
-        }
-      }
+      if (backToTop) backToTop.classList.toggle('visible', window.scrollY > 300);
     });
   }
 
@@ -296,6 +285,40 @@ class WebsiteGenerator {
     }
   }
 
+  // Nav link: hash links go through the router, everything else opens a new tab
+  createNavLink(item) {
+    const link = document.createElement('a');
+    link.href = item.href;
+    link.textContent = item.text;
+    if (item.href.startsWith('#')) {
+      const route = item.href.slice(1);
+      if (this.isActiveRoute(route)) link.classList.add('active');
+      link.onclick = (e) => {
+        e.preventDefault();
+        window.router?.navigate(route);
+      };
+    } else {
+      link.target = '_blank';
+    }
+    return link;
+  }
+
+  createSelect(id, label, options, selected) {
+    const select = document.createElement('select');
+    select.id = id;
+    select.className = 'theme-select';
+    select.setAttribute('aria-label', label);
+    select.title = label;
+    options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt.value;
+      option.textContent = opt.label;
+      option.selected = opt.value === selected;
+      select.appendChild(option);
+    });
+    return select;
+  }
+
   renderNavbar() {
     const nav = document.createElement('nav');
     nav.className = 'navbar';
@@ -305,7 +328,6 @@ class WebsiteGenerator {
     leftNav.className = 'navbar-left';
 
     if (mode === 'small' || mode === 'medium') {
-      // Hamburger menu
       const hamburger = document.createElement('button');
       hamburger.className = 'hamburger';
       hamburger.setAttribute('aria-label', 'Toggle navigation menu');
@@ -318,59 +340,10 @@ class WebsiteGenerator {
       const mobileMenu = document.createElement('div');
       mobileMenu.className = 'mobile-menu';
       mobileMenu.id = 'mobile-menu';
-      this.config.navbar.navigation.forEach(item => {
-        const link = document.createElement('a');
-        if (item.href.startsWith('#')) {
-          link.href = item.href;
-          const route = item.href.slice(1);
-          if (this.isActiveRoute(route)) {
-            link.classList.add('active');
-          }
-          link.onclick = (e) => {
-            e.preventDefault();
-            if (window.router) {
-              window.router.navigate(route);
-            }
-          };
-        } else {
-          link.href = item.href;
-          if (!item.href.startsWith('#')) {
-            link.target = '_blank';
-          }
-        }
-        link.textContent = item.text;
-        mobileMenu.appendChild(link);
-      });
+      this.config.navbar.navigation.forEach(item => mobileMenu.appendChild(this.createNavLink(item)));
       leftNav.appendChild(mobileMenu);
     } else {
-      // Regular navigation
-      this.config.navbar.navigation.forEach(item => {
-        const link = document.createElement('a');
-        // Check if it's a route (starts with #) or external link
-        if (item.href.startsWith('#')) {
-          link.href = item.href;
-          const route = item.href.slice(1);
-
-          // Add active class if current route matches
-          if (this.isActiveRoute(route)) {
-            link.classList.add('active');
-          }
-
-          link.onclick = (e) => {
-            e.preventDefault();
-            if (window.router) {
-              window.router.navigate(route);
-            }
-          };
-        } else {
-          link.href = item.href;
-          if (!item.href.startsWith('#')) {
-            link.target = '_blank';
-          }
-        }
-        link.textContent = item.text;
-        leftNav.appendChild(link);
-      });
+      this.config.navbar.navigation.forEach(item => leftNav.appendChild(this.createNavLink(item)));
     }
 
     nav.appendChild(leftNav);
@@ -389,64 +362,23 @@ class WebsiteGenerator {
       nav.appendChild(centerDiv);
     }
 
-    // Right controls (theme switcher + dark/light toggle)
+    // Right controls: font size, theme, and dark/light dropdowns
     const rightDiv = document.createElement('div');
     rightDiv.className = 'navbar-right';
-
-    // font size dropdown
-    const fontSizeSelect = document.createElement('select');
-    fontSizeSelect.id = 'font-size-select';
-    fontSizeSelect.className = 'theme-select';
-    fontSizeSelect.setAttribute('aria-label', 'Font Size');
-    fontSizeSelect.title = 'Font Size';
-    [
+    rightDiv.appendChild(this.createSelect('font-size-select', 'Font Size', [
       { value: 'small', label: 'Small' },
       { value: 'medium', label: 'Medium' },
       { value: 'large', label: 'Large' },
       { value: 'xlarge', label: 'XLarge' }
-    ].forEach(size => {
-      const option = document.createElement('option');
-      option.value = size.value;
-      option.textContent = size.label;
-      option.selected = size.value === this.fontSize;
-      fontSizeSelect.appendChild(option);
-    });
-    rightDiv.appendChild(fontSizeSelect);
-
-    // theme dropdown
-    const themeSelect = document.createElement('select');
-    themeSelect.id = 'theme-select';
-    themeSelect.className = 'theme-select';
-    themeSelect.setAttribute('aria-label', 'Theme');
+    ], this.fontSize));
     const availableThemes = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['Haruhana', 'Natsumikan', 'Akiba', 'Fuyuyuki'];
-    availableThemes.forEach(theme => {
-      const option = document.createElement('option');
-      option.value = theme;
-      option.textContent = theme;
-      option.selected = theme === this.theme;
-      themeSelect.appendChild(option);
-    });
-    rightDiv.appendChild(themeSelect);
-
-    // light/dark mode dropdown
-    const variantSelect = document.createElement('select');
-    variantSelect.id = 'variant-select';
-    variantSelect.className = 'theme-select';
-    variantSelect.setAttribute('aria-label', 'Color Mode');
-    variantSelect.title = 'Color Mode';
-    [
+    rightDiv.appendChild(this.createSelect('theme-select', 'Theme',
+      availableThemes.map(t => ({ value: t, label: t })), this.theme));
+    rightDiv.appendChild(this.createSelect('variant-select', 'Color Mode', [
       { value: 'dark', label: 'Dark' },
       { value: 'light', label: 'Light' },
       { value: 'system', label: 'System' }
-    ].forEach(variant => {
-      const option = document.createElement('option');
-      option.value = variant.value;
-      option.textContent = variant.label;
-      option.selected = variant.value === this.variantMode;
-      variantSelect.appendChild(option);
-    });
-    rightDiv.appendChild(variantSelect);
-
+    ], this.variantMode));
     nav.appendChild(rightDiv);
 
     return nav;
@@ -643,12 +575,12 @@ class WebsiteGenerator {
     boxes.forEach(box => {
       const boxWidth = Math.min(box.w, columns);
       if (autoFlow && !box.isBlogPost) {
-        container.appendChild(this.renderBox(box, boxWidth, null, box.h));
+        container.appendChild(this.renderBox(box, boxWidth, null));
         return;
       }
       const position = this.findPosition(grid, boxWidth, box.h);
       if (position) {
-        const el = this.renderBox(box, boxWidth, position, box.h);
+        const el = this.renderBox(box, boxWidth, position);
         container.appendChild(el);
         for (let row = position.row; row < position.row + box.h; row++) {
           for (let col = position.col; col < position.col + boxWidth; col++) {
@@ -821,7 +753,6 @@ class WebsiteGenerator {
     const containerWidth = container.clientWidth;
     const gap = parseFloat(getComputedStyle(container).gap) || 16;
     const columnWidth = (containerWidth - (columns - 1) * gap) / columns;
-    this._rowUnit = columnWidth;
     container.style.gridAutoRows = `${columnWidth}px`;
   }
 
@@ -866,12 +797,12 @@ class WebsiteGenerator {
     return img.outerHTML;
   }
 
-  renderBox(box, width, position, effH) {
+  renderBox(box, width, position) {
     const boxEl = document.createElement('div');
     boxEl.className = `box${box.pinned ? ' box-pinned' : ''}${box.isBlogPost ? ' box-blog-post' : ''}`;
     if (position) {
       boxEl.style.gridColumn = `${position.col + 1} / span ${width}`;
-      if (!box.isBlogPost) boxEl.style.gridRow = `${position.row + 1} / span ${effH || box.h}`;
+      if (!box.isBlogPost) boxEl.style.gridRow = `${position.row + 1} / span ${box.h}`;
     } else {
       // Small-viewport auto flow: natural height, source order
       boxEl.style.gridColumn = `span ${width}`;
@@ -909,7 +840,7 @@ class WebsiteGenerator {
     if (box.title) {
       const title = document.createElement('div');
       title.className = 'box-title';
-      title.innerHTML = `<span>${this.parser.parseInline(box.title)}</span>`;
+      title.innerHTML = `<span>${this.parser.processInline(box.title)}</span>`;
       if (box.pinned) {
         title.innerHTML += '<span class="pinned-label">PINNED</span>';
       }
@@ -1088,23 +1019,5 @@ class WebsiteGenerator {
         this.reRenderContent();
       });
     }
-  }
-}
-
-/*
- * Site gen wrapper
- */
-function initWebsite(config) {
-  if (!config) {
-    console.error('No config provided');
-    document.getElementById('app').innerHTML = '<p>Error: No website configuration provided.</p>';
-    return;
-  }
-
-  try {
-    new WebsiteGenerator(config);
-  } catch (error) {
-    console.error('Failed to initialize website:', error);
-    document.getElementById('app').innerHTML = '<p>Error initializing website.</p>';
   }
 }
