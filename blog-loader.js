@@ -2,10 +2,11 @@ class BlogLoader {
   constructor() {
     this.blogs = [];
     this.blogFiles = [
-      'BLOG_welcome-to-kuroma-dev',
-      'BLOG_markdown-editor-tutorial',
-      'BLOG_discord-s-beginning-of-an-end',
-      'BLOG_my-2025-tech-journey',
+      "BLOG_welcome-to-kuroma-dev",
+      "BLOG_markdown-editor-tutorial",
+      "BLOG_discord-s-beginning-of-an-end",
+      "BLOG_my-2025-tech-journey",
+      "BLOG_jepa-deep-research-demo",
     ];
   }
 
@@ -13,12 +14,12 @@ class BlogLoader {
   async loadAllBlogs() {
     const loadPromises = this.blogFiles.map((filename) => {
       return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
+        const script = document.createElement("script");
         script.src = `./blogs/${filename}.js`;
         script.onload = () => {
           if (window.BLOG_CONFIG) {
-            const blog = {...window.BLOG_CONFIG};
-            blog.slug = filename.replace('BLOG_', '');
+            const blog = { ...window.BLOG_CONFIG };
+            blog.slug = filename.replace("BLOG_", "");
             delete window.BLOG_CONFIG;
             resolve(blog);
           } else {
@@ -31,10 +32,10 @@ class BlogLoader {
     });
     try {
       const results = await Promise.all(loadPromises);
-      this.blogs = results.filter(blog => blog !== null);
+      this.blogs = results.filter((blog) => blog !== null);
       return this.blogs;
     } catch (error) {
-      console.error('Error loading blogs:', error);
+      console.error("Error loading blogs:", error);
       return [];
     }
   }
@@ -47,14 +48,14 @@ class BlogLoader {
         { text: "Projects", href: "#/projects" },
         { text: "Blog", href: "#/blog" },
         { text: "Origami", href: "#/origami" },
-        { text: "Services", href: "#/services" }
+        { text: "Services", href: "#/services" },
       ],
-      centerText: "Kuroma.dev - Blogs"
+      centerText: "Kuroma.dev - Blogs",
     };
   }
 
   generateBlogListingConfig() {
-    const boxes = this.blogs.map(blog => ({
+    const boxes = this.blogs.map((blog) => ({
       id: `blog-${blog.slug}`,
       title: blog.title,
       type: "markdown",
@@ -64,11 +65,11 @@ class BlogLoader {
       date: blog.date_created,
       pinned: blog.pinned || false,
       content: {
-        markdown: this.generatePreviewMarkdown(blog)
+        markdown: this.generatePreviewMarkdown(blog),
       },
       tags: blog.tags,
       footer: this.generateFooter(blog),
-      href: `#/blog/${blog.slug}`
+      href: `#/blog/${blog.slug}`,
     }));
 
     return {
@@ -86,13 +87,13 @@ class BlogLoader {
         backButtons: [
           {
             text: "← Back Home",
-            href: "#/"
+            href: "#/",
           },
           {
             text: "Go to Editor",
-            href: "./editor/index.html"
-          }
-        ]
+            href: "./editor/index.html",
+          },
+        ],
       },
       selectionArea: {
         enabled: true,
@@ -100,28 +101,30 @@ class BlogLoader {
           {
             name: "Newest First",
             key: ["date"],
-            ascending: false
+            ascending: false,
           },
           {
             name: "Oldest First",
             key: ["date"],
-            ascending: true
+            ascending: true,
           },
           {
             name: "Title A-Z",
             key: ["title"],
-            ascending: true
-          }
-        ]
+            ascending: true,
+          },
+        ],
       },
       boxes: boxes,
-      footer: "© 2026 KK Thuwajit (kuroma.dev)"
+      footer: "© 2026 KK Thuwajit (kuroma.dev)",
     };
   }
 
   // Helper: calculate reading time from markdown content
   calculateReadingTime(markdownContent) {
-    const words = markdownContent.split(/\s+/).filter(word => word.trim().length > 0);
+    const words = markdownContent
+      .split(/\s+/)
+      .filter((word) => word.trim().length > 0);
     const wordCount = words.length;
     const WPM = 250;
     const readTime = Math.ceil(wordCount / WPM);
@@ -130,26 +133,28 @@ class BlogLoader {
 
   // Helper: format date with options
   formatDate(dateStr, options) {
-    return new Date(dateStr).toLocaleDateString('en-US', options);
+    return new Date(dateStr).toLocaleDateString("en-US", options);
   }
 
   // Helper: generate date string with optional update
   getDateString(blog, longFormat = true, includeTime = true) {
     const dateOpts = longFormat
-      ? { year: 'numeric', month: 'long', day: 'numeric' }
-      : { year: 'numeric', month: 'short', day: 'numeric' };
+      ? { year: "numeric", month: "long", day: "numeric" }
+      : { year: "numeric", month: "short", day: "numeric" };
 
     const date = this.formatDate(blog.date_created, dateOpts);
     const updated = blog.date_updated
-      ? ` ${longFormat ? '·' : '('}Updated ${this.formatDate(blog.date_updated, { year: 'numeric', month: 'short', day: 'numeric' })}${longFormat ? '' : ')'}`
-      : '';
-    const readTime = includeTime ? ` · ${this.calculateReadingTime(blog.content)} read` : '';
+      ? ` ${longFormat ? "·" : "("}Updated ${this.formatDate(blog.date_updated, { year: "numeric", month: "short", day: "numeric" })}${longFormat ? "" : ")"}`
+      : "";
+    const readTime = includeTime
+      ? ` · ${this.calculateReadingTime(blog.content)} read`
+      : "";
 
     return `${date}${updated}${readTime}`;
   }
 
   generatePreviewMarkdown(blog) {
-    const preview = blog.content.split('\n\n').slice(0, 1).join('\n\n');
+    const preview = blog.content.split("\n\n").slice(0, 1).join("\n\n");
     return `${preview}\n\n**Read time:** ${this.calculateReadingTime(blog.content)}`;
   }
 
@@ -162,7 +167,7 @@ class BlogLoader {
   }
 
   getBlogBySlug(slug) {
-    return this.blogs.find(blog => blog.slug === slug);
+    return this.blogs.find((blog) => blog.slug === slug);
   }
 
   generateBlogPostConfig(slug) {
@@ -181,26 +186,28 @@ class BlogLoader {
         subtitle: this.generateSubtitle(blog),
         backButtons: [
           { text: "← Back to Blog", href: "#/blog" },
-          { text: "← Back Home", href: "#/" }
-        ]
+          { text: "← Back Home", href: "#/" },
+        ],
       },
       selectionArea: { enabled: false },
-      boxes: [{
-        id: "blog-content",
-        title: "",
-        type: "markdown",
-        w: 12,
-        h: 1,
-        isBlogPost: true,
-        content: { markdown: blog.content },
-        tags: blog.tags,
-        footer: this.generateFooter(blog)
-      }],
-      footer: "© 2026 KK Thuwajit (kuroma.dev)"
+      boxes: [
+        {
+          id: "blog-content",
+          title: "",
+          type: "markdown",
+          w: 12,
+          h: 1,
+          isBlogPost: true,
+          content: { markdown: blog.content },
+          tags: blog.tags,
+          footer: this.generateFooter(blog),
+        },
+      ],
+      footer: "© 2026 KK Thuwajit (kuroma.dev)",
     };
   }
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.blogLoader = new BlogLoader();
 }
