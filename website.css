@@ -55,6 +55,43 @@ code, pre, kbd, samp { font-family: 'Maple Mono', ui-monospace, monospace; }
 .navbar-center { flex: 1; text-align: center; padding: 0 1rem; }
 .navbar-right { display: flex; align-items: center; gap: 0.75rem; flex: 1; justify-content: flex-end; }
 
+/* Appearance menu (Aa popover) — palette swatches + segmented mode/size toggles */
+.settings-menu { position: relative; }
+.settings-menu > summary { list-style: none; cursor: pointer; }
+.settings-menu > summary::-webkit-details-marker { display: none; }
+.settings-toggle {
+  border: 1px solid var(--overlay0); border-radius: 9999px; background: var(--surface0);
+  color: var(--text); font-family: inherit; font-size: 0.875rem; font-weight: 600;
+  padding: 0.5rem 0.95rem; transition: all 0.2s; user-select: none; line-height: 1;
+}
+.settings-menu[open] .settings-toggle, .settings-toggle:hover { background: var(--surface1); }
+.settings-body {
+  position: absolute; right: 0; top: calc(100% + 8px); background: var(--mantle);
+  border: 1px solid var(--surface2); border-radius: 16px; box-shadow: 0 12px 34px rgba(0,0,0,0.25);
+  padding: 0.5rem; min-width: 214px; z-index: 1200; display: flex; flex-direction: column; gap: 2px;
+}
+.settings-label {
+  font-size: 0.66rem; letter-spacing: 0.7px; text-transform: uppercase;
+  color: var(--overlay1); padding: 0.5rem 0.7rem 0.15rem;
+}
+.settings-row { display: flex; gap: 0.5rem; padding: 0.2rem 0.7rem 0.4rem; align-items: center; flex-wrap: wrap; }
+.swatch {
+  width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent;
+  cursor: pointer; padding: 0; transition: transform 0.15s;
+}
+.swatch:hover { transform: scale(1.12); }
+.swatch.active { border-color: var(--text); }
+.seg {
+  display: flex; border: 1px solid var(--surface2); border-radius: 9999px; overflow: hidden;
+  margin: 0.25rem 0.7rem 0.4rem;
+}
+.seg-btn {
+  flex: 1; border: 0; background: none; padding: 0.34rem 0.5rem; font: inherit;
+  font-size: 0.8rem; color: var(--subtext0); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.seg-btn:hover { color: var(--text); }
+.seg-btn.active { background: var(--surface1); color: var(--text); font-weight: 600; }
+
 /* Header */
 .header { text-align: center; padding: 2rem 2rem 1.5rem; max-width: 800px; margin: 0 auto; }
 .header-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1rem; }
@@ -246,6 +283,8 @@ svg.box-image, svg.box-image-full { width: 100%; height: 100%; display: block; }
   .navbar-center { display: none; }
   .navbar-right { gap: 0.4rem; flex-wrap: nowrap; min-width: 0; }
   .theme-select { padding: 0.35rem 0.5rem; font-size: 0.75rem; flex: 1 1 0; min-width: 0; max-width: 6.5rem; }
+  .settings-toggle { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+  .settings-body { min-width: 190px; }
   .header { padding: 1.5rem 1rem 1rem; }
   .header h1 { font-size: 2rem; }
   .header-avatar { width: 140px; height: 140px; }

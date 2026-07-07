@@ -161,6 +161,10 @@ class WebsiteGenerator {
       if (menu && !menu.contains(e.target) && hamburger && !hamburger.contains(e.target)) {
         this.closeMobileMenu();
       }
+      const settings = document.getElementById('settings-menu');
+      if (settings && settings.open && !settings.contains(e.target)) {
+        settings.removeAttribute('open');
+      }
     });
     // handle scroll for back-to-top button
     window.addEventListener('scroll', () => {
@@ -303,20 +307,115 @@ class WebsiteGenerator {
     return link;
   }
 
-  createSelect(id, label, options, selected) {
-    const select = document.createElement('select');
-    select.id = id;
-    select.className = 'theme-select';
-    select.setAttribute('aria-label', label);
-    select.title = label;
-    options.forEach(opt => {
-      const option = document.createElement('option');
-      option.value = opt.value;
-      option.textContent = opt.label;
-      option.selected = opt.value === selected;
-      select.appendChild(option);
+  // "Aa" appearance popover: palette swatches (gradient = light/dark accent) +
+  // segmented mode/text-size toggles. Selections apply live and persist via StateManager.
+  createSettingsMenu() {
+    const details = document.createElement('details');
+    details.className = 'settings-menu';
+    details.id = 'settings-menu';
+
+    const summary = document.createElement('summary');
+    summary.className = 'settings-toggle';
+    summary.title = 'Appearance';
+    summary.textContent = 'Aa';
+    details.appendChild(summary);
+
+    const body = document.createElement('div');
+    body.className = 'settings-body';
+
+    body.appendChild(this.menuLabel('Palette'));
+    const swRow = document.createElement('div');
+    swRow.className = 'settings-row';
+    const themeNames = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['Haruhana', 'Natsumikan', 'Akiba', 'Fuyuyuki'];
+    themeNames.forEach(name => {
+      const sw = document.createElement('button');
+      sw.className = 'swatch' + (name === this.theme ? ' active' : '');
+      sw.dataset.theme = name;
+      sw.title = name;
+      if (typeof THEMES !== 'undefined' && THEMES[name]) {
+        sw.style.background = `linear-gradient(135deg, ${THEMES[name].light.primary} 50%, ${THEMES[name].dark.primary} 50%)`;
+      }
+      sw.onclick = (e) => { e.preventDefault(); this.selectTheme(name); };
+      swRow.appendChild(sw);
     });
-    return select;
+    body.appendChild(swRow);
+
+    body.appendChild(this.menuLabel('Mode'));
+    body.appendChild(this.segment('mode', [
+      { value: 'light', label: 'Light' },
+      { value: 'dark', label: 'Dark' },
+      { value: 'system', label: 'Auto' }
+    ], this.variantMode, v => this.selectVariant(v)));
+
+    body.appendChild(this.menuLabel('Text size'));
+    body.appendChild(this.segment('size', [
+      { value: 'small', label: 'S' },
+      { value: 'medium', label: 'M' },
+      { value: 'large', label: 'L' },
+      { value: 'xlarge', label: 'XL' }
+    ], this.fontSize, v => this.selectFontSize(v)));
+
+    details.appendChild(body);
+    return details;
+  }
+
+  menuLabel(text) {
+    const d = document.createElement('div');
+    d.className = 'settings-label';
+    d.textContent = text;
+    return d;
+  }
+
+  segment(group, options, selected, onPick) {
+    const seg = document.createElement('div');
+    seg.className = 'seg';
+    seg.dataset.group = group;
+    options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'seg-btn' + (opt.value === selected ? ' active' : '');
+      b.dataset.value = opt.value;
+      b.textContent = opt.label;
+      b.onclick = (e) => { e.preventDefault(); onPick(opt.value); };
+      seg.appendChild(b);
+    });
+    return seg;
+  }
+
+  selectTheme(name) {
+    this.theme = name;
+    this.parser.setTheme(this.theme, this.variant);
+    this.applyTheme();
+    this.reRenderContent();
+    if (window.stateManager) window.stateManager.setState('theme', this.theme);
+    this.syncSettingsMenu();
+  }
+
+  selectVariant(mode) {
+    this.variantMode = mode;
+    this.variant = this.getEffectiveVariant();
+    this.parser.setTheme(this.theme, this.variant);
+    this.applyTheme();
+    this.reRenderContent();
+    if (window.stateManager) window.stateManager.setState('variant', this.variantMode);
+    this.syncSettingsMenu();
+  }
+
+  selectFontSize(size) {
+    this.fontSize = size;
+    this.applyFontSize();
+    if (window.stateManager) window.stateManager.setState('fontSize', this.fontSize);
+    this.syncSettingsMenu();
+  }
+
+  // Reflect current state onto the open popover without rebuilding it (keeps it open).
+  syncSettingsMenu() {
+    document.querySelectorAll('.settings-menu .swatch').forEach(b =>
+      b.classList.toggle('active', b.dataset.theme === this.theme));
+    const cur = { mode: this.variantMode, size: this.fontSize };
+    document.querySelectorAll('.settings-menu .seg').forEach(seg => {
+      seg.querySelectorAll('.seg-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.value === cur[seg.dataset.group]));
+    });
   }
 
   renderNavbar() {
@@ -362,23 +461,10 @@ class WebsiteGenerator {
       nav.appendChild(centerDiv);
     }
 
-    // Right controls: font size, theme, and dark/light dropdowns
+    // Right controls: single "Aa" appearance popover (palette + mode + text size)
     const rightDiv = document.createElement('div');
     rightDiv.className = 'navbar-right';
-    rightDiv.appendChild(this.createSelect('font-size-select', 'Font Size', [
-      { value: 'small', label: 'Small' },
-      { value: 'medium', label: 'Medium' },
-      { value: 'large', label: 'Large' },
-      { value: 'xlarge', label: 'XLarge' }
-    ], this.fontSize));
-    const availableThemes = typeof THEMES !== 'undefined' ? Object.keys(THEMES) : ['Haruhana', 'Natsumikan', 'Akiba', 'Fuyuyuki'];
-    rightDiv.appendChild(this.createSelect('theme-select', 'Theme',
-      availableThemes.map(t => ({ value: t, label: t })), this.theme));
-    rightDiv.appendChild(this.createSelect('variant-select', 'Color Mode', [
-      { value: 'dark', label: 'Dark' },
-      { value: 'light', label: 'Light' },
-      { value: 'system', label: 'System' }
-    ], this.variantMode));
+    rightDiv.appendChild(this.createSettingsMenu());
     nav.appendChild(rightDiv);
 
     return nav;
@@ -966,43 +1052,8 @@ class WebsiteGenerator {
   }
 
   attachEventListeners() {
-    const fontSizeSelect = document.getElementById('font-size-select');
-    if (fontSizeSelect) {
-      fontSizeSelect.addEventListener('change', (e) => {
-        this.fontSize = e.target.value;
-        this.applyFontSize();
-        if (window.stateManager) {
-          window.stateManager.setState('fontSize', this.fontSize);
-        }
-      });
-    }
-    const themeSelect = document.getElementById('theme-select');
-    if (themeSelect) {
-      themeSelect.addEventListener('change', (e) => {
-        this.theme = e.target.value;
-        this.parser.setTheme(this.theme, this.variant);
-        this.applyTheme();
-        this.reRenderContent();
-        if (window.stateManager) {
-          window.stateManager.setState('theme', this.theme);
-        }
-      });
-    }
-
-    const variantSelect = document.getElementById('variant-select');
-    if (variantSelect) {
-      variantSelect.addEventListener('change', (e) => {
-        this.variantMode = e.target.value;
-        this.variant = this.getEffectiveVariant();
-        this.parser.setTheme(this.theme, this.variant);
-        this.applyTheme();
-        this.reRenderContent();
-        if (window.stateManager) {
-          window.stateManager.setState('variant', this.variantMode);
-        }
-      });
-    }
-
+    // Appearance controls live in the "Aa" popover (createSettingsMenu); their
+    // change handlers are bound per-button there and persist via StateManager.
     const searchBar = document.getElementById('search-bar');
     if (searchBar) {
       searchBar.addEventListener('input', () => {
