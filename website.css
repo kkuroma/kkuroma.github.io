@@ -41,6 +41,41 @@
   font-display: swap;
 }
 
+/* Default palette (Natsumikan dark) so the very first paint is themed even
+   before any JS runs; the inline boot script / website.js override these
+   inline on documentElement for saved themes */
+:root {
+  --base: #0D1017;
+  --mantle: #171D26;
+  --crust: #0A0C12;
+  --text: #D1D1C7;
+  --subtext1: #babcb9;
+  --subtext0: #8E959E;
+  --surface2: #464B5D;
+  --surface1: #253040;
+  --surface0: #242C3A;
+  --overlay2: #8E959E;
+  --overlay1: #6e7481;
+  --overlay0: #5c6170;
+  --primary: #F5803E;
+  --secondary: #FFB454;
+  --tertiary: #39BAE6;
+  --red: #FF5370;
+  --maroon: #D9707E;
+  --peach: #ff8d5f;
+  --yellow: #FFB454;
+  --green: #AAD94C;
+  --teal: #4DD0B0;
+  --sky: #6BD2F0;
+  --sapphire: #4FA6E8;
+  --blue: #73B8FF;
+  --lavender: #A6ACF0;
+  --mauve: #C792EA;
+  --pink: #F58EC0;
+  --flamingo: #F2A788;
+  --rosewater: #E8C0B8;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 /* --content-scale tracks the grid unit (set by website.js) so typography
    shrinks/grows proportionally with the tiles at every viewport */

@@ -5,8 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog Editor</title>
   <link rel="icon" href="../assets/icon.webp" type="image/webp">
-  <script src="../themes.js"></script>
-  <script src="../theme-boot.js"></script>
+  <!-- Pre-paint theme boot: applies the palette cached by website.js/editor.js
+       on the last visit (website.css :root holds the default palette for first
+       visits). Inlined so no render-blocking script requests are needed. Keep
+       in sync with ../index.html. -->
+  <script>
+    (function () {
+      let s = {};
+      try { s = JSON.parse(localStorage.getItem('website-state')) || {}; } catch (e) { /* corrupted state */ }
+      let variant = s.variant || 'dark';
+      if (variant === 'system') {
+        variant = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      const root = document.documentElement;
+      const palette = s.paletteCache && s.paletteCache[variant];
+      if (palette) {
+        Object.entries(palette).forEach(([name, value]) => {
+          root.style.setProperty(`--${name}`, value);
+        });
+      }
+      const sizes = { small: '14px', medium: '16px', large: '18px', xlarge: '20px' };
+      root.style.setProperty('--font-size-base', sizes[s.fontSize] || '16px');
+    })();
+  </script>
   <link rel="preload" href="../assets/fonts/GoogleSansFlex.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/MapleMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../website.css">
@@ -142,6 +163,7 @@ console.log('Hello World');
   </div>
 
   <!-- Scripts -->
+  <script defer src="../themes.js"></script>
   <script defer src="../prism.js/prism.js"></script>
   <script defer src="../svg-library.js"></script>
   <script defer src="../markdown.js"></script>

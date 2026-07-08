@@ -203,6 +203,16 @@ class WebsiteGenerator {
     Object.entries(colors).forEach(([name, value]) => {
       root.style.setProperty(`--${name}`, value);
     });
+
+    // Cache both variants so the inline pre-paint boot script (index.html)
+    // can restore the palette on the next visit without loading themes.js
+    if (window.stateManager) {
+      window.stateManager.setState('paletteCache', {
+        theme: this.theme,
+        light: THEMES[this.theme].light,
+        dark: THEMES[this.theme].dark
+      });
+    }
   }
 
   applyFontSize() {

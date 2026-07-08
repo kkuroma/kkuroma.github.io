@@ -80,6 +80,14 @@ class BlogEditor {
     Object.entries(colors).forEach(([name, value]) => {
       root.style.setProperty(`--${name}`, value);
     });
+    // Keep the pre-paint boot script's palette cache in sync (see index.html)
+    if (window.stateManager) {
+      window.stateManager.setState('paletteCache', {
+        theme: this.theme,
+        light: THEMES[this.theme].light,
+        dark: THEMES[this.theme].dark
+      });
+    }
   }
 
   applyFontSize() {
