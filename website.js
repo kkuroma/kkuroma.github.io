@@ -545,6 +545,10 @@ class WebsiteGenerator {
       avatar.src = this.config.header.avatar;
       avatar.alt = 'Avatar';
       avatar.className = 'header-avatar';
+      avatar.width = 180;
+      avatar.height = 180;
+      avatar.setAttribute('fetchpriority', 'high');
+      avatar.decoding = 'async';
       header.appendChild(avatar);
     }
 
@@ -863,7 +867,7 @@ class WebsiteGenerator {
   }
 
   // Helper: render image or SVG from image_url
-  renderImage(imageUrl, title, isFullSize = false) {
+  renderImage(imageUrl, title, isFullSize = false, imageSize = null) {
     if (imageUrl.startsWith('svg:')) {
       const [, iconName, color = ''] = imageUrl.split(':');
       if (window.getSVG) {
@@ -880,6 +884,12 @@ class WebsiteGenerator {
     img.src = imageUrl;
     img.alt = title || 'Box image';
     img.className = isFullSize ? 'box-image-full' : 'box-image';
+    if (imageSize && imageSize.length === 2) {
+      img.width = imageSize[0];
+      img.height = imageSize[1];
+    }
+    img.loading = 'lazy';
+    img.decoding = 'async';
     return img.outerHTML;
   }
 
@@ -945,7 +955,7 @@ class WebsiteGenerator {
         body.className = 'box-body box-body-split';
         const imageContainer = document.createElement('div');
         imageContainer.className = 'box-image-container';
-        imageContainer.innerHTML = this.renderImage(box.image_url, box.title);
+        imageContainer.innerHTML = this.renderImage(box.image_url, box.title, false, box.image_size);
 
         const markdownContainer = document.createElement('div');
         markdownContainer.className = 'box-markdown-container markdown-content';
@@ -958,7 +968,7 @@ class WebsiteGenerator {
         body.innerHTML = this.parser.parse(box.content.markdown);
       } else if (hasImage) {
         body.className = 'box-body box-body-image-only';
-        body.innerHTML = this.renderImage(box.image_url, box.title, true);
+        body.innerHTML = this.renderImage(box.image_url, box.title, true, box.image_size);
       }
     } else if (box.type === 'code' && box.content.code) {
       body.className = 'box-body box-body-code markdown-content';

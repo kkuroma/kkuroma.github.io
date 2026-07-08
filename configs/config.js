@@ -42,7 +42,8 @@ const HOME_CONFIG = {
       w: 6,
       h: 3,
       pinned: true,
-      image_url: "./assets/profile.jpg",
+      image_url: "./assets/profile.webp",
+      image_size: [360, 350],
       content: {
         markdown: `
 My name is **[KK Thuwajit]{color:yellow}**, but you might know me online as **[KKuroma]{color:green}** as well.

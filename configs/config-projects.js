@@ -17,7 +17,7 @@ const PROJECTS_CONFIG = {
   header: {
     title: "My works",
     subtitle: "A collection of my publicly available research, projects, and ideas",
-    avatar: "./assets/profile.jpg",
+    avatar: "./assets/profile.webp",
     backButton: {
       text: "← Back Home",
       href: "#/"
@@ -55,7 +55,8 @@ const PROJECTS_CONFIG = {
       type: "markdown",
       w: 6,
       h: 3,
-      image_url: "./previews/kuromadotdev.png",
+      image_url: "./previews/kuromadotdev.webp",
+      image_size: [600, 440],
       content: {
         markdown: `## Homepage
 
@@ -73,7 +74,8 @@ My current personal website featuring a minimal tiling box design.
       type: "markdown",
       w: 6,
       h: 3,
-      image_url: "./previews/dotfiles.png",
+      image_url: "./previews/dotfiles.webp",
+      image_size: [600, 338],
       content: {
         markdown: `## My Dotfiles
 
@@ -91,7 +93,8 @@ An installer script for my developer desktop experience on Arch and Hyprland
       type: "markdown",
       w: 6,
       h: 3,
-      image_url: "./previews/output.png",
+      image_url: "./previews/output.webp",
+      image_size: [600, 600],
       content: {
         markdown: `
 ## ISMRM 2024 Poster
@@ -108,7 +111,8 @@ An installer script for my developer desktop experience on Arch and Hyprland
       type: "markdown",
       w: 6,
       h: 3,
-      image_url: "./previews/textualexclusion.png",
+      image_url: "./previews/textualexclusion.webp",
+      image_size: [600, 480],
       content: {
         markdown: `
 ## In-class research, CS839 @UW-Madison
@@ -125,7 +129,8 @@ An installer script for my developer desktop experience on Arch and Hyprland
       type: "markdown",
       w: 6,
       h: 3,
-      image_url: "./previews/eegwavenet.png",
+      image_url: "./previews/eegwavenet.webp",
+      image_size: [600, 393],
       content: {
         markdown: `
 ## IEEE Internet of Things Journal
@@ -142,7 +147,8 @@ An installer script for my developer desktop experience on Arch and Hyprland
       type: "markdown",
       w: 6,
       h: 3,
-      image_url: "./previews/ganime.png",
+      image_url: "./previews/ganime.webp",
+      image_size: [570, 557],
       content: {
         markdown: `
 ## GAN tutorial on anime faces

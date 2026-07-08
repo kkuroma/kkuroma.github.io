@@ -470,6 +470,8 @@ class MarkdownParser {
       img.alt = caption || 'Image';
       if (width) img.width = width;
       if (height) img.height = height;
+      img.loading = 'lazy';
+      img.decoding = 'async';
       return this.withCaption(img, caption);
     });
 
@@ -514,6 +516,8 @@ class MarkdownParser {
       imgEl.alt = caption || 'Image';
       if (width) imgEl.width = width;
       if (height) imgEl.height = height;
+      imgEl.loading = 'lazy';
+      imgEl.decoding = 'async';
 
       const container = document.createElement('div');
       container.className = 'image-row-item';

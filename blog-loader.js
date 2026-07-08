@@ -61,6 +61,7 @@ class BlogLoader {
       w: 6,
       h: 3,
       image_url: blog.preview_img,
+      image_size: blog.preview_img_size || null,
       date: blog.date_created,
       pinned: blog.pinned || false,
       content: {
@@ -82,7 +83,7 @@ class BlogLoader {
       header: {
         title: "My Blogs",
         subtitle: "Welcome to my corner of the internet",
-        avatar: "./assets/profile.jpg",
+        avatar: "./assets/profile.webp",
         backButtons: [
           {
             text: "← Back Home",
