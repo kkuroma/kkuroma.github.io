@@ -103,7 +103,10 @@ class MarkdownParser {
   /* Sanitize URLs */
   sanitizeUrl(url) {
     if (!url || typeof url !== 'string') return '#';
-    const trimmed = url.trim();
+    // Strip characters JS/HTML would ignore but that let a scheme hide from the
+    // checks below: leading/trailing whitespace plus any control chars (e.g.
+    // "java\tscript:") anywhere in the string.
+    const trimmed = url.trim().replace(/[\x00-\x1F\x7F]/g, "");
     const dangerousProtocols = /^(javascript|data|vbscript|file|about):/i;
     if (dangerousProtocols.test(trimmed)) {
       console.warn('Blocked dangerous URL:', trimmed);
@@ -114,7 +117,12 @@ class MarkdownParser {
       console.warn('Blocked suspicious URL:', trimmed);
       return '#';
     }
-    return trimmed;
+    // Percent-encode characters that could break out of a quoted HTML
+    // attribute (the URL is interpolated into href="..."). These are all
+    // invalid unencoded in a real URL, so valid links are untouched, while
+    // `&` (already entity-encoded by the initial sanitize pass) is preserved.
+    return trimmed.replace(/["'`<>\\ \t\n\r]/g,
+      c => '%' + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'));
   }
 
   /* Main parse method */
