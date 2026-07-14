@@ -1,0 +1,64 @@
+/* Shared theme for the CS559 demo pages (p*.html).
+   Linked AFTER each page's inline <style>, so equal-specificity color rules
+   here win by source order while the pages' own layout rules stay in charge.
+   graphics-boot.js applies the site's cached palette over the :root defaults
+   below and adds .embed on <html> when the page runs inside an iframe. */
+
+@font-face {
+  font-family: 'Google Sans Flex';
+  src: url('../../assets/fonts/GoogleSansFlex.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Default palette (Natsumikan dark), same contract as website.css :root */
+:root {
+  --base: #0D1017;
+  --mantle: #171D26;
+  --crust: #0A0C12;
+  --text: #D1D1C7;
+  --subtext1: #babcb9;
+  --subtext0: #8E959E;
+  --surface2: #464B5D;
+  --surface1: #253040;
+  --surface0: #242C3A;
+  --overlay2: #8E959E;
+  --overlay1: #6e7481;
+  --overlay0: #5c6170;
+  --primary: #F5803E;
+  --secondary: #FFB454;
+  --tertiary: #39BAE6;
+}
+
+body {
+  margin: 0;
+  background: var(--base);
+  color: var(--text);
+  font-family: 'Google Sans Flex', 'Noto Sans', -apple-system, 'Segoe UI', sans-serif;
+}
+
+h1 { color: var(--primary); font-family: inherit; }
+p, strong { color: var(--text); font-family: inherit; }
+label { color: var(--subtext0); font-family: inherit; }
+
+/* White canvas backing keeps the original graphics readable (p1/p2 draw dark
+   strokes on a transparent canvas); demos that paint their own background
+   cover it anyway */
+canvas { border: 1px solid var(--overlay0); border-radius: 8px; background: #fff; }
+
+input[type="range"], input[type="checkbox"] { accent-color: var(--primary); }
+button, select {
+  font-family: inherit; font-size: 0.875rem; color: var(--text);
+  background: var(--surface0); border: 1px solid var(--overlay0);
+  border-radius: 9999px; padding: 0.4rem 0.9rem; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+button:hover, select:hover { background: var(--surface1); border-color: var(--primary); }
+
+/* Embed mode (inside the site's spoiler iframes): the box supplies the title
+   and overview, so hide the standalone chrome and blend into the box */
+html.embed body { background: transparent; }
+html.embed .page-chrome { display: none; }
+/* The pages' fixed vh container heights force internal scrolling in short
+   frames; size to content instead, centering when smaller than the frame */
+html.embed .container { height: auto; min-height: 100vh; }
