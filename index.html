@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="KK's personal website — data scientist, tech enthusiast, and origami artist. Explore projects, blog posts, and more.">
+  <meta name="description" content="KK's personal website: data scientist, tech enthusiast, and origami artist. Explore projects, blog posts, and more.">
   <!-- Pre-paint theme boot: applies the palette cached by website.js on the
        last visit (website.css :root holds the default palette for first visits).
        Inlined so no render-blocking script requests are needed. Keep in sync
@@ -25,6 +25,18 @@
       }
       const sizes = { small: '14px', medium: '16px', large: '18px', xlarge: '20px' };
       root.style.setProperty('--font-size-base', sizes[s.fontSize] || '16px');
+      // Pre-paint --content-scale estimate (mirror of updateGridRowHeight() in
+      // website.js; keep the formula and breakpoints in sync) so the first
+      // paint doesn't shift when the real scale lands. Editor page omits this
+      // block: it has no tiling grid.
+      const w = window.innerWidth;
+      const small = w < 768;
+      const cols = small ? 4 : (w < 1024 ? 8 : 12);
+      const pad = small ? 32 : 64;
+      const gap = small ? 12 : 16;
+      const maxScale = location.hash.startsWith('#/blog/') ? 1.15 : 2;
+      const scale = Math.min(maxScale, Math.max(0.65, w / (pad + (cols - 1) * gap + 100 * cols)));
+      root.style.setProperty('--content-scale', scale.toFixed(3));
     })();
   </script>
   <link rel="preload" href="assets/fonts/GoogleSansFlex.woff2" as="font" type="font/woff2" crossorigin>
@@ -39,6 +51,7 @@
   <script defer src="blog-loader.js"></script>
   <script defer src="configs/config.js"></script>
   <script defer src="configs/config-projects.js"></script>
+  <script defer src="configs/config-graphics.js"></script>
   <script defer src="configs/config-services.js"></script>
   <script defer src="configs/config-404.js"></script>
 </head>
@@ -55,6 +68,7 @@
       const BLOG_CONFIG = window.blogLoader.generateBlogListingConfig();
       window.router.register('/', HOME_CONFIG);
       window.router.register('/projects', PROJECTS_CONFIG);
+      window.router.register('/graphics', GRAPHICS_CONFIG);
       window.router.register('/services', SERVICES_CONFIG);
       window.router.register('/blog', BLOG_CONFIG);
       window.router.register('/404', NOT_FOUND_CONFIG);

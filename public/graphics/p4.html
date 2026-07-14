@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <script src="graphics-boot.js"></script>
     <title>Bad Apple</title>
     <style>
         .container {
@@ -70,12 +70,13 @@
             gap: 10px;
         }
     </style>
+    <link rel="stylesheet" href="graphics.css">
 </head>
 <body>
     <audio id="audioPlayer" src="badapple.mp3" preload="auto" loop></audio>
     <div class="container">
-        <h1>バッドアップル</h1>
-        <p>
+        <h1 class="page-chrome">バッドアップル</h1>
+        <p class="page-chrome">
             Bad apple, made using precomputed cubic hermite curves
             <br>-><strong>C1-continuity</strong> enforced (might look polygon-y because of small tangents)
             <br>-><strong>Tap the canvas</strong> to pause/play, use the seeker to move

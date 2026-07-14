@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <script src="graphics-boot.js"></script>
     <title>🗿 Moyai</title>
     <style>
         .container {
@@ -67,12 +67,13 @@
             color: #5e5e5e;
         }
     </style>
+    <link rel="stylesheet" href="graphics.css">
 </head>
 <body>
 <div class="container">
-    <h1>🗿 Moyai 🗿</h1>
-    <p style="padding-top:0; margin-bottom:0;">Click the screen to move around, press ESC to return cursor</p>
-    <p style="margin : 0; padding-top:0;">Use W S A D for directional controls, SHIFT to go down, SPACE to go up</p>
+    <h1 class="page-chrome">🗿 Moyai 🗿</h1>
+    <p class="page-chrome" style="padding-top:0; margin-bottom:0;">Click the screen to move around, press ESC to return cursor</p>
+    <p class="page-chrome" style="margin : 0; padding-top:0;">Use W S A D for directional controls, SHIFT to go down, SPACE to go up</p>
     <canvas id="glCanvas" width="800" height="600"></canvas> 
 </div>
 <script id="vertexShader" type="x-shader/x-vertex">

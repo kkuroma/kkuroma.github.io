@@ -23,6 +23,7 @@
  * ![Image](url){Image with size, 800, 600}
  * ![Iframe](url){Iframe with captions}
  * ![Iframe](url){Iframe with size, 800, 600}
+ * ![Iframe](url){Click-to-load iframe, 600, spoiler} - full width; the single number is the height
  * | Col1 | Col2 | - table
  * ![SVG](name){color1:value1, color2:value2, width, height} - SVG icons
  * #TOC - table of contents
@@ -83,8 +84,9 @@ class MarkdownParser {
   parseMediaParams(params) {
     const parts = (params || '').split(',').map(p => p.trim());
     const numbers = parts.filter(p => /^\d+$/.test(p));
-    const text = parts.filter(p => p && !/^\d+$/.test(p));
-    return { caption: text.join(', '), width: numbers[0] || '', height: numbers[1] || '' };
+    const spoiler = parts.some(p => p.toLowerCase() === 'spoiler');
+    const text = parts.filter(p => p && !/^\d+$/.test(p) && p.toLowerCase() !== 'spoiler');
+    return { caption: text.join(', '), width: numbers[0] || '', height: numbers[1] || '', spoiler };
   }
 
   /* Wrap a media element in <figure> when a caption is given */
@@ -389,6 +391,12 @@ class MarkdownParser {
       }
     }
 
+    // Lone iframe: emit unwrapped, so a box body that is only an embed can
+    // stretch it to fill the box (.box-body > .iframe-spoiler:only-child)
+    if (/^!\[Iframe\]\([^)]+\)(?:\{[^}]*\})?$/.test(text)) {
+      return (hasInlineHtml ? text : this.processInline(text)) + '\n';
+    }
+
     // Regular paragraph
     const content = hasInlineHtml ? text : this.processInline(text);
     return `<p>${content}</p>\n`;
@@ -477,7 +485,22 @@ class MarkdownParser {
 
     // Iframes
     result = result.replace(/!\[Iframe\]\(([^)]+)\)(?:\{([^}]+)\})?/g, (_, url, params) => {
-      const { caption, width, height } = this.parseMediaParams(params);
+      const { caption, width, height, spoiler } = this.parseMediaParams(params);
+      if (spoiler) {
+        // Click-to-load placeholder: always full width, so a single size
+        // number means the height (in design px; stored as rem to track
+        // --content-scale). Swapped for the real iframe by the delegated
+        // listener at the bottom of this file.
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'iframe-spoiler';
+        btn.dataset.src = this.sanitizeUrl(url);
+        btn.dataset.title = caption || 'Embedded content';
+        const spoilerHeight = height || width;
+        if (spoilerHeight) btn.style.height = `${spoilerHeight / 16}rem`;
+        btn.textContent = `▶ Click to load: ${caption || 'embedded content'}`;
+        return btn.outerHTML;
+      }
       const iframe = document.createElement('iframe');
       iframe.src = this.sanitizeUrl(url);
       iframe.title = caption || 'Embedded content';
@@ -756,4 +779,20 @@ MarkdownParser.loadKatexIfNeeded = function(text) {
 // Export
 if (typeof window !== 'undefined') {
   window.MarkdownParser = MarkdownParser;
+  // Spoiler iframes: one delegated listener survives content re-renders.
+  // Capture phase + stopPropagation so loading a spoiler never triggers the
+  // click handler of an enclosing href'd box. data-src was sanitized at parse.
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('.iframe-spoiler');
+    if (!btn) return;
+    e.stopPropagation();
+    const iframe = document.createElement('iframe');
+    iframe.src = btn.dataset.src;
+    iframe.title = btn.dataset.title || 'Embedded content';
+    iframe.className = 'iframe-embed';
+    if (btn.style.height) iframe.style.height = btn.style.height;
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allowfullscreen', '');
+    btn.replaceWith(iframe);
+  }, true);
 }

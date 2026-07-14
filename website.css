@@ -126,7 +126,7 @@ code, pre, kbd, samp { font-family: 'Maple Mono', ui-monospace, monospace; }
 .navbar-center { flex: 1; text-align: center; padding: 0 1rem; }
 .navbar-right { display: flex; align-items: center; gap: 0.75rem; flex: 1; justify-content: flex-end; }
 
-/* Appearance menu (Aa popover) — palette swatches + segmented mode/size toggles */
+/* Appearance menu (Aa popover): palette swatches + segmented mode/size toggles */
 .settings-menu { position: relative; }
 .settings-menu > summary { list-style: none; cursor: pointer; }
 .settings-menu > summary::-webkit-details-marker { display: none; }
@@ -164,19 +164,19 @@ code, pre, kbd, samp { font-family: 'Maple Mono', ui-monospace, monospace; }
 .seg-btn.active { background: var(--surface1); color: var(--text); font-weight: 600; }
 
 /* Header */
-.header { text-align: center; padding: 2rem 2rem 1.5rem; max-width: 800px; margin: 0 auto; }
+.header { text-align: center; padding: 2rem 2rem 1.5rem; max-width: 50rem; margin: 0 auto; }
 .header-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1rem; }
 .back-button { display: inline-block; padding: 0.5rem 1rem; background: var(--surface0); color: var(--primary); text-decoration: none; font-weight: 500; }
 .back-button:hover { border-color: var(--primary); transform: translateX(-2px); }
 .header h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 0.5rem; }
 .header hr { border: none; border-top: 2px solid var(--overlay0); margin: 0.75rem auto; width: 50%; }
 .header .subtitle { font-size: 1.1rem; color: var(--subtext0); }
-.header-avatar { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; margin-top: 1rem; border: 3px solid var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.header-avatar { width: 11.25rem; height: 11.25rem; border-radius: 50%; object-fit: cover; margin-top: 1rem; border: 3px solid var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
 /* Selection area */
 .selection-area { padding: 1rem 2rem; }
 .search-bar {
-  width: 80%; max-width: 600px; margin: 0 auto 1rem; padding: 0.75rem 1.25rem;
+  width: 80%; max-width: 37.5rem; margin: 0 auto 1rem; padding: 0.75rem 1.25rem;
   background: var(--mantle); font-size: 0.9rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block;
 }
 .search-bar:focus { outline: none; border-color: var(--primary); }
@@ -245,7 +245,7 @@ svg.box-image, svg.box-image-full { width: 100%; height: 100%; display: block; }
 
 /* Site footer + back to top */
 .site-footer { padding: 1rem; text-align: center; background: var(--mantle); border-top: 1px solid var(--overlay0); }
-.site-footer hr { border: none; border-top: 2px solid var(--overlay0); margin: 0 auto 0.5rem; width: 50%; max-width: 400px; }
+.site-footer hr { border: none; border-top: 2px solid var(--overlay0); margin: 0 auto 0.5rem; width: 50%; max-width: 25rem; }
 .site-footer p, .navbar-center p { color: var(--subtext0); font-size: 0.8rem; }
 .back-to-top {
   position: fixed; bottom: 2rem; right: 2rem; width: 3rem; height: 3rem;
@@ -296,6 +296,35 @@ svg.box-image, svg.box-image-full { width: 100%; height: 100%; display: block; }
 .markdown-content .image-row-item img { margin: 0 auto; }
 .markdown-content .katex-display { text-align: center; overflow-x: auto; }
 .markdown-content iframe { width: 100%; aspect-ratio: 16/9; border-radius: 4px; }
+/* Spoiler iframes: click-to-load placeholder swapped for the real iframe.
+   Height comes from an inline rem style so it scales with --content-scale.
+   The embed stays transparent: the graphics demo pages theme themselves via
+   public/graphics/graphics.css + graphics-boot.js and set their embedded
+   body background to transparent so the box shows through */
+.markdown-content .iframe-spoiler {
+  display: flex; align-items: center; justify-content: center; width: 100%;
+  min-height: 3rem; margin: 0.5rem 0; padding: 1rem;
+  background: var(--surface0); color: var(--subtext0);
+  border: 2px dashed var(--overlay0); border-radius: 8px;
+  font: inherit; cursor: pointer; transition: all 0.2s;
+}
+.markdown-content .iframe-spoiler:hover {
+  background: var(--surface1); color: var(--primary); border-color: var(--primary);
+}
+.markdown-content iframe.iframe-embed {
+  aspect-ratio: auto; border: 0; border-radius: 8px; margin: 0.5rem 0;
+}
+/* A box body that is nothing but an embed: the frame fills the body so the
+   gap around it stays even (fixed-height boxes only; auto-height boxes on
+   small screens keep the inline rem height) */
+.box-body:has(> .iframe-spoiler:only-child), .box-body:has(> .iframe-embed:only-child) {
+  padding-right: 0; overflow: hidden;
+}
+.box:not(.box-auto) .box-body > .iframe-spoiler:only-child,
+.box:not(.box-auto) .box-body > .iframe-embed:only-child {
+  height: 100% !important;
+}
+.box-body > .iframe-spoiler:only-child, .box-body > .iframe-embed:only-child { margin: 0; }
 
 /* Prism tokens */
 .markdown-content :is(.token.comment, .token.prolog, .token.doctype, .token.cdata) { color: var(--overlay0); font-style: italic; }

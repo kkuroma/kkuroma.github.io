@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <script src="graphics-boot.js"></script>
     <title>MazeGame</title>
     <style>
         .container {
@@ -67,11 +67,12 @@
             color: #5e5e5e;
         }
     </style>
+    <link rel="stylesheet" href="graphics.css">
 </head>
 <body>
     <div class="container">
-        <h1>The "Infinite" Maze Game</h1>
-        <p>
+        <h1 class="page-chrome">The "Infinite" Maze Game</h1>
+        <p class="page-chrome">
             Try to win with the least number of moves or the highest score!
             <br>Gems give you a score of n for a maze of size n x n
             <br>Use W-A-S-D to control your position and your mouse to control the camera
@@ -648,9 +649,9 @@
             }
             if (victory) {
                 ctx.fillStyle = 'rgba(0,0,0,1)';
-                ctx.font = "50px Roboto";
+                ctx.font = "50px 'Google Sans Flex', sans-serif";
                 ctx.fillText("Congratulations, you win!",-280,-100);
-                ctx.font = "30px Roboto";
+                ctx.font = "30px 'Google Sans Flex', sans-serif";
                 ctx.fillText(`You used a total of ${cube.nummoves} moves`,-200,-30);
                 ctx.fillText(`(optimally, you'll need ${optimal_sol} moves)`,-220,30);
                 ctx.fillText(`Collected gem scores = ${score}`,-170,90);

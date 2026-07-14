@@ -832,14 +832,21 @@ class WebsiteGenerator {
 
   updateGridRowHeight() {
     // Content scale: fonts track the grid unit relative to the ~100px unit of
-    // the large layout, so smaller viewports render a proportionally shrunk
+    // the large layout, so any viewport renders a proportionally scaled
     // version of the large design instead of squishing text into tight boxes
+    // (small screens) or leaving blank space in oversized boxes (big screens).
+    // Padding and gap are rem-based so they scale with the fonts; solving
+    // unit(scale) = 100 * scale gives scale = width / (pad + gaps + 100 * columns).
     const columns = this.getColumns();
     const small = this.currentMode === 'small';
     const pad = small ? 32 : 64;
     const gapEst = small ? 12 : 16;
-    const unitEst = (window.innerWidth - pad - (columns - 1) * gapEst) / columns;
-    const scale = Math.min(1.15, Math.max(0.65, unitEst / 100));
+    // Blog posts render in a fixed 1000px column, so scaling with the window
+    // would just shorten line lengths; keep the old conservative cap there
+    const isBlogPage = this.config.boxes.every(box => box.isBlogPost);
+    const maxScale = isBlogPage ? 1.15 : 2;
+    const rawScale = window.innerWidth / (pad + (columns - 1) * gapEst + 100 * columns);
+    const scale = Math.min(maxScale, Math.max(0.65, rawScale));
     document.documentElement.style.setProperty('--content-scale', scale.toFixed(3));
     const container = document.querySelector('.boxes-container');
     if (!container) return;
@@ -933,7 +940,9 @@ class WebsiteGenerator {
         }
       });
       boxEl.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
+        // only when the box itself is focused, so Enter on an inner
+        // interactive element (e.g. a spoiler button) keeps its own action
+        if (e.key === 'Enter' && e.target === boxEl) {
           e.preventDefault();
           navigateBox();
         }
