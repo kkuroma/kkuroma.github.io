@@ -844,7 +844,10 @@ class WebsiteGenerator {
     // Blog posts render in a fixed 1000px column, so scaling with the window
     // would just shorten line lengths; keep the old conservative cap there
     const isBlogPage = this.config.boxes.every(box => box.isBlogPost);
-    const maxScale = isBlogPage ? 1.15 : 2;
+    // Cap at 1.0 = native design scale: beyond --content-max-width the layout
+    // stops growing and the sides become plain margin (capped, centered column)
+    // instead of scaling everything up on large monitors.
+    const maxScale = isBlogPage ? 1.15 : 1;
     const rawScale = window.innerWidth / (pad + (columns - 1) * gapEst + 100 * columns);
     const scale = Math.min(maxScale, Math.max(0.65, rawScale));
     document.documentElement.style.setProperty('--content-scale', scale.toFixed(3));

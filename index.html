@@ -34,7 +34,7 @@
       const cols = small ? 4 : (w < 1024 ? 8 : 12);
       const pad = small ? 32 : 64;
       const gap = small ? 12 : 16;
-      const maxScale = location.hash.startsWith('#/blog/') ? 1.15 : 2;
+      const maxScale = location.hash.startsWith('#/blog/') ? 1.15 : 1;
       const scale = Math.min(maxScale, Math.max(0.65, w / (pad + (cols - 1) * gap + 100 * cols)));
       root.style.setProperty('--content-scale', scale.toFixed(3));
     })();
