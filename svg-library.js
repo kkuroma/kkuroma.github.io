@@ -141,7 +141,19 @@ const SVG_LIBRARY = {
   </svg>`
 };
 
-// helper function, adds color width and height attributes to svg
+/**
+ * Resolves an SVG icon from the library with colors and size applied.
+ *
+ * Replaces each {{key}} placeholder with the matching colors[key], falls back
+ * to currentColor for any remaining placeholders, and adds width/height
+ * attributes unless either is undefined (leaving size to CSS).
+ *
+ * @param {string} name    - icon key in SVG_LIBRARY
+ * @param {object} colors  - map of placeholder key to color value
+ * @param {number} width   - pixel width attribute, or undefined for CSS control
+ * @param {number} height  - pixel height attribute, or undefined for CSS control
+ * @returns {string} the SVG markup, or "" if the name is unknown
+ */
 function getSVG(name, colors = {}, width = 24, height = 24) {
   if (!SVG_LIBRARY[name]) {
     console.warn(`SVG "${name}" not found in library`);

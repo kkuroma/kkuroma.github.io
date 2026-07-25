@@ -1,4 +1,23 @@
 /**
+ * Layout constants shared by the tiling grid and the pre-paint --content-scale
+ * estimate inlined in index.html (keep the two copies in sync).
+ */
+const BREAKPOINT_SMALL = 768;    // below this is phone (small mode)
+const BREAKPOINT_MEDIUM = 1024;  // below this is tablet (medium), else desktop (large)
+const COLUMNS_SMALL = 4;
+const COLUMNS_MEDIUM = 8;
+const COLUMNS_LARGE = 12;
+const GRID_ROWS = 100;           // rows in the box-placement grid
+const GRID_UNIT = 100;           // design px per grid unit; --content-scale tracks it
+const PAD_SMALL = 32;            // container horizontal padding estimate (px)
+const PAD_LARGE = 64;
+const GAP_SMALL = 12;            // inter-box gap estimate (px)
+const GAP_LARGE = 16;
+const SCALE_MIN = 0.65;          // clamps for --content-scale
+const SCALE_MAX = 1;
+const SCALE_MAX_BLOG = 1.15;     // blog posts render in a fixed 1000px column
+
+/**
  * Router System
  */
 
@@ -9,17 +28,34 @@ class Router {
     this.stateManager = new StateManager();
   }
 
+  /**
+   * Registers a config object under a route path.
+   *
+   * @param {string} path    - the route path, e.g. "/projects"
+   * @param {object} config  - the page config to render for that route
+   * @returns {void}
+   */
   register(path, config) {
     this.routes[path] = config;
   }
 
+  /**
+   * Navigates to a path and renders its page, falling back to /404.
+   *
+   * Blog paths (/blog/:slug) build their config dynamically via blogLoader;
+   * other paths use the registered config. Theme/variant/fontSize are restored
+   * from StateManager before rendering.
+   *
+   * @param {string} path  - the route path (without the leading '#')
+   * @returns {Promise<void>}
+   */
   async navigate(path) {
     let config = null;
 
     // blog
     if (path.startsWith('/blog/') && window.blogLoader) {
       const slug = path.replace('/blog/', '');
-      config = window.blogLoader.generateBlogPostConfig(slug);
+      config = window.blogLoader.buildPostConfig(slug);
       if (!config) {
         console.error(`Blog post not found: ${slug}`);
         // Show 404 for non-existent blog posts
@@ -54,6 +90,11 @@ class Router {
     window.currentWebsite = new WebsiteGenerator(config);
   }
 
+  /**
+   * Starts the router: listens for hash changes and navigates to the initial path.
+   *
+   * @returns {void}
+   */
   init() {
     window.addEventListener('hashchange', () => {
       const path = window.location.hash.slice(1) || '/';
@@ -73,6 +114,11 @@ class StateManager {
     this.storageKey = 'website-state';
   }
 
+  /**
+   * Reads the persisted state object from localStorage.
+   *
+   * @returns {object} the parsed state, or {} if missing or invalid
+   */
   getState() {
     const stored = localStorage.getItem(this.storageKey);
     if (stored) {
@@ -85,6 +131,13 @@ class StateManager {
     return {};
   }
 
+  /**
+   * Writes one key into the persisted state object.
+   *
+   * @param {string} key  - the state key to set
+   * @param {*} value     - the value to store
+   * @returns {void}
+   */
   setState(key, value) {
     const state = this.getState();
     state[key] = value;
@@ -100,6 +153,14 @@ window.stateManager = new StateManager();
  */
 
 class WebsiteGenerator {
+  /**
+   * Builds and renders a page from a config object.
+   *
+   * Resolves theme/variant/font size (falling back to defaults), sets up the
+   * markdown parser and tag palette, computes the responsive mode, then runs init().
+   *
+   * @param {object} config  - the page config (theme, header, boxes, footer, ...)
+   */
   constructor(config) {
     this.config = config;
     this.theme = (typeof THEMES !== 'undefined' && THEMES[config.theme]) ? config.theme : 'Natsumikan';
@@ -118,6 +179,14 @@ class WebsiteGenerator {
     this.init();
   }
 
+  /**
+   * Applies appearance and metadata, renders, and binds global listeners.
+   *
+   * Wires resize (mode switch vs. rescale), font-swap settle passes, system
+   * theme changes, outside-click menu closing, and the back-to-top scroll toggle.
+   *
+   * @returns {void}
+   */
   init() {
     this.applyTheme();
     this.applyFontSize();
@@ -132,7 +201,7 @@ class WebsiteGenerator {
         this.currentMode = newMode;
         this.render();
       } else {
-        this.updateGridRowHeight();
+        this.updateRowHeight();
         // debounced re-render restores tags dropped by settleBoxes when the
         // viewport grows back (tiling itself is deterministic)
         clearTimeout(this._resizeTimer);
@@ -173,13 +242,23 @@ class WebsiteGenerator {
     });
   }
 
+  /**
+   * The responsive mode for the current viewport width.
+   *
+   * @returns {'small'|'medium'|'large'} phone, tablet, or desktop mode
+   */
   getMode() {
     const width = window.innerWidth;
-    if (width < 768) return 'small'; // phone sized
-    if (width < 1024) return 'medium'; // tablet sized
-    return 'large'; // desktop sized
+    if (width < BREAKPOINT_SMALL) return 'small';
+    if (width < BREAKPOINT_MEDIUM) return 'medium';
+    return 'large';
   }
 
+  /**
+   * Resolves 'system' variant to the OS preference, else the chosen variant.
+   *
+   * @returns {'dark'|'light'} the effective color variant
+   */
   getEffectiveVariant() {
     if (this.variantMode === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -187,13 +266,45 @@ class WebsiteGenerator {
     return this.variantMode;
   }
 
+  /**
+   * The number of grid columns the current mode tiles into.
+   *
+   * @returns {number} 4 (small), 8 (medium), or 12 (large)
+   */
   getColumns() {
     const mode = this.currentMode;
-    if (mode === 'small') return 4;
-    if (mode === 'medium') return 8;
-    return 12;
+    if (mode === 'small') return COLUMNS_SMALL;
+    if (mode === 'medium') return COLUMNS_MEDIUM;
+    return COLUMNS_LARGE;
   }
 
+  /**
+   * The { w, h } a box occupies in the current grid mode.
+   *
+   * A box may declare a per-mode override object (box.medium / box.small) whose
+   * w/h win over the default w/h, so a layout authored for 12 columns can be
+   * retiled cleanly at 8 (medium) without leaving gaps. Missing keys fall back
+   * to the box default.
+   *
+   * @param {object} box  - box config, with default w/h and optional overrides
+   * @returns {{w: number, h: number}} the width/height for the current mode
+   */
+  resolveDims(box) {
+    const override = box[this.currentMode];
+    return {
+      w: override && override.w != null ? override.w : box.w,
+      h: override && override.h != null ? override.h : box.h,
+    };
+  }
+
+  /**
+   * Applies the current theme palette to CSS variables and caches both variants.
+   *
+   * Caches light and dark palettes via StateManager so the pre-paint boot script
+   * in index.html can restore colors on the next visit without loading themes.js.
+   *
+   * @returns {void}
+   */
   applyTheme() {
     if (typeof THEMES === 'undefined') return;
 
@@ -215,6 +326,11 @@ class WebsiteGenerator {
     }
   }
 
+  /**
+   * Sets the base font size CSS variable from the current fontSize key.
+   *
+   * @returns {void}
+   */
   applyFontSize() {
     const root = document.documentElement;
     const fontSizes = {
@@ -226,6 +342,11 @@ class WebsiteGenerator {
     root.style.setProperty('--font-size-base', fontSizes[this.fontSize] || fontSizes['medium']);
   }
 
+  /**
+   * Applies the page title and favicon from the config.
+   *
+   * @returns {void}
+   */
   applyMetadata() {
     if (this.config.pageTitle) { document.title = this.config.pageTitle; }
     if (this.config.favicon) {
@@ -239,6 +360,11 @@ class WebsiteGenerator {
     }
   }
 
+  /**
+   * Assigns a palette color to each distinct tag, cycling through colorPalette.
+   *
+   * @returns {void}
+   */
   assignTagColors() {
     const allTags = new Set();
     this.config.boxes.forEach(box => {
@@ -254,6 +380,13 @@ class WebsiteGenerator {
     });
   }
 
+  /**
+   * Renders the full page into #app: navbar, header, selection, boxes, footer.
+   *
+   * After rendering, lazy-loads KaTeX and re-renders if any content uses math.
+   *
+   * @returns {void}
+   */
   render() {
     const app = document.getElementById('app');
     app.innerHTML = '';
@@ -265,11 +398,11 @@ class WebsiteGenerator {
       app.appendChild(this.renderSelectionArea());
     }
     app.appendChild(this.renderBoxes());
-    this.updateGridRowHeight();
+    this.updateRowHeight();
     if (this.config.footer) {
       app.appendChild(this.renderFooter());
     }
-    app.appendChild(this.renderBackToTop());
+    app.appendChild(this.renderTopButton());
     this.settleBoxes();
 
     // Lazy-load KaTeX if any content contains $, then re-render so math displays
@@ -288,18 +421,28 @@ class WebsiteGenerator {
     }
   }
 
+  /**
+   * Re-renders only the boxes region, leaving chrome intact.
+   *
+   * @returns {void}
+   */
   reRenderContent() {
     // re render only boxes
     const wrapper = document.getElementById('boxes-wrapper');
     if (wrapper) {
       const newBoxes = this.renderBoxes();
       wrapper.replaceWith(newBoxes);
-      this.updateGridRowHeight();
+      this.updateRowHeight();
       this.settleBoxes();
     }
   }
 
-  // Nav link: hash links go through the router, everything else opens a new tab
+  /**
+   * Creates a nav anchor: hash links route via the router, others open a new tab.
+   *
+   * @param {object} item  - nav item with text and href
+   * @returns {HTMLAnchorElement} the nav link element
+   */
   createNavLink(item) {
     const link = document.createElement('a');
     link.href = item.href;
@@ -317,8 +460,14 @@ class WebsiteGenerator {
     return link;
   }
 
-  // "Aa" appearance popover: palette swatches (gradient = light/dark accent) +
-  // segmented mode/text-size toggles. Selections apply live and persist via StateManager.
+  /**
+   * Builds the "Aa" appearance popover (palette, mode, and text-size controls).
+   *
+   * Palette swatches show a light/dark accent gradient; the mode and text-size
+   * segments apply live and persist via StateManager.
+   *
+   * @returns {HTMLDetailsElement} the settings popover element
+   */
   createSettingsMenu() {
     const details = document.createElement('details');
     details.className = 'settings-menu';
@@ -369,6 +518,12 @@ class WebsiteGenerator {
     return details;
   }
 
+  /**
+   * Creates a small label element for a settings section.
+   *
+   * @param {string} text  - the label text
+   * @returns {HTMLDivElement} the label element
+   */
   menuLabel(text) {
     const d = document.createElement('div');
     d.className = 'settings-label';
@@ -376,6 +531,15 @@ class WebsiteGenerator {
     return d;
   }
 
+  /**
+   * Builds a segmented button group, highlighting the selected value.
+   *
+   * @param {string} group      - group name, stored on the element dataset
+   * @param {object[]} options  - option list of { value, label }
+   * @param {string} selected   - the currently selected value
+   * @param {function} onPick   - callback invoked with the picked value
+   * @returns {HTMLDivElement} the segment element
+   */
   segment(group, options, selected, onPick) {
     const seg = document.createElement('div');
     seg.className = 'seg';
@@ -391,6 +555,12 @@ class WebsiteGenerator {
     return seg;
   }
 
+  /**
+   * Switches the theme, re-renders content, and persists the choice.
+   *
+   * @param {string} name  - the theme name to apply
+   * @returns {void}
+   */
   selectTheme(name) {
     this.theme = name;
     this.parser.setTheme(this.theme, this.variant);
@@ -400,6 +570,12 @@ class WebsiteGenerator {
     this.syncSettingsMenu();
   }
 
+  /**
+   * Switches the color variant (light/dark/system), re-renders, and persists it.
+   *
+   * @param {'light'|'dark'|'system'} mode  - the variant mode to apply
+   * @returns {void}
+   */
   selectVariant(mode) {
     this.variantMode = mode;
     this.variant = this.getEffectiveVariant();
@@ -410,6 +586,12 @@ class WebsiteGenerator {
     this.syncSettingsMenu();
   }
 
+  /**
+   * Switches the font size, applies it, and persists the choice.
+   *
+   * @param {string} size  - the font-size key (small/medium/large/xlarge)
+   * @returns {void}
+   */
   selectFontSize(size) {
     this.fontSize = size;
     this.applyFontSize();
@@ -417,7 +599,11 @@ class WebsiteGenerator {
     this.syncSettingsMenu();
   }
 
-  // Reflect current state onto the open popover without rebuilding it (keeps it open).
+  /**
+   * Reflects current theme/variant/size onto the open popover without rebuilding it.
+   *
+   * @returns {void}
+   */
   syncSettingsMenu() {
     document.querySelectorAll('.settings-menu .swatch').forEach(b =>
       b.classList.toggle('active', b.dataset.theme === this.theme));
@@ -428,6 +614,11 @@ class WebsiteGenerator {
     });
   }
 
+  /**
+   * Renders the navbar: nav links (or hamburger menu), center text, and controls.
+   *
+   * @returns {HTMLElement} the navbar element
+   */
   renderNavbar() {
     const nav = document.createElement('nav');
     nav.className = 'navbar';
@@ -480,11 +671,21 @@ class WebsiteGenerator {
     return nav;
   }
 
+  /**
+   * Toggles the mobile navigation menu open or closed.
+   *
+   * @returns {void}
+   */
   toggleMobileMenu() {
     const menu = document.getElementById('mobile-menu');
     menu.classList.toggle('active');
   }
 
+  /**
+   * Closes the mobile navigation menu if it is open.
+   *
+   * @returns {void}
+   */
   closeMobileMenu() {
     const menu = document.getElementById('mobile-menu');
     if (menu) {
@@ -492,6 +693,12 @@ class WebsiteGenerator {
     }
   }
 
+  /**
+   * Whether a nav route matches the current route (blog posts count as /blog).
+   *
+   * @param {string} route  - the route to test
+   * @returns {boolean} true when it is the active route
+   */
   isActiveRoute(route) {
     const currentRoute = window.router ? window.router.currentRoute : null;
     if (!currentRoute) return false;
@@ -500,6 +707,11 @@ class WebsiteGenerator {
     return currentRoute === route;
   }
 
+  /**
+   * Renders the page header: back buttons, title, subtitle, and avatar.
+   *
+   * @returns {HTMLDivElement} the header element
+   */
   renderHeader() {
     const header = document.createElement('div');
     header.className = 'header';
@@ -565,6 +777,11 @@ class WebsiteGenerator {
     return header;
   }
 
+  /**
+   * Renders the selection area: search bar, tag filter buttons, and sort dropdown.
+   *
+   * @returns {HTMLDivElement} the selection-area element
+   */
   renderSelectionArea() {
     const selection = document.createElement('div');
     selection.className = 'selection-area';
@@ -637,6 +854,14 @@ class WebsiteGenerator {
     return selection;
   }
 
+  /**
+   * Renders the grid of boxes with first-fit tiling (or auto-flow on small).
+   *
+   * Filters/sorts/paginates the boxes, places each at its resolved mode size,
+   * records placements, and stretches boxes rightward to fill gaps (non-small).
+   *
+   * @returns {HTMLDivElement} the boxes wrapper (pagination + grid container)
+   */
   renderBoxes() {
     const wrapper = document.createElement('div');
     wrapper.id = 'boxes-wrapper';
@@ -651,7 +876,7 @@ class WebsiteGenerator {
     }
 
     const columns = this.getColumns();
-    const grid = Array.from({ length: 100 }, () => Array(columns).fill(false));
+    const grid = Array.from({ length: GRID_ROWS }, () => Array(columns).fill(false));
     let boxes = this.getFilteredBoxes();
     if (this.activeSortBy !== null) {
       boxes = this.sortBoxes(boxes);
@@ -673,21 +898,22 @@ class WebsiteGenerator {
     // fixed square rows), so long text is never squished into a tight box
     const autoFlow = this.currentMode === 'small';
     boxes.forEach(box => {
-      const boxWidth = Math.min(box.w, columns);
+      const dims = this.resolveDims(box);
+      const boxWidth = Math.min(dims.w, columns);
       if (autoFlow && !box.isBlogPost) {
-        container.appendChild(this.renderBox(box, boxWidth, null));
+        container.appendChild(this.renderBox(box, boxWidth, null, dims));
         return;
       }
-      const position = this.findPosition(grid, boxWidth, box.h);
+      const position = this.findPosition(grid, boxWidth, dims.h);
       if (position) {
-        const el = this.renderBox(box, boxWidth, position);
+        const el = this.renderBox(box, boxWidth, position, dims);
         container.appendChild(el);
-        for (let row = position.row; row < position.row + box.h; row++) {
+        for (let row = position.row; row < position.row + dims.h; row++) {
           for (let col = position.col; col < position.col + boxWidth; col++) {
             if (grid[row]) grid[row][col] = true;
           }
         }
-        this._placements.push({ box, el, row: position.row, col: position.col, w: boxWidth, h: box.h });
+        this._placements.push({ box, el, row: position.row, col: position.col, w: boxWidth, h: dims.h, dims });
       }
     });
     if (!allBlogPosts && !autoFlow) {
@@ -698,11 +924,17 @@ class WebsiteGenerator {
     return wrapper;
   }
 
-  // A box with nothing but free cells to its right (across all its rows)
-  // stretches to the grid edge. Square-aspect cards (w == h) are exempt.
+  /**
+   * Stretches boxes rightward to the grid edge when the cells to their right
+   * are all free. Square-aspect cards (w == h) are exempt.
+   *
+   * @param {boolean[][]} grid  - the occupancy grid
+   * @param {number} columns    - the column count for the current mode
+   * @returns {void}
+   */
   stretchBoxesRight(grid, columns) {
     this._placements.forEach(p => {
-      if (p.box.w === p.box.h) return;
+      if (p.dims.w === p.dims.h) return;
       if (p.col + p.w >= columns) return;
       for (let c = p.col + p.w; c < columns; c++) {
         for (let r = p.row; r < p.row + p.h; r++) {
@@ -717,8 +949,13 @@ class WebsiteGenerator {
     });
   }
 
-  // Tiling is deterministic: boxes always occupy their configured w x h.
-  // This pass only handles cosmetic fixes that don't change box geometry.
+  /**
+   * Cosmetic post-layout pass that never changes box geometry.
+   *
+   * Currently drops tags on icon cards when they would wrap below the footer line.
+   *
+   * @returns {void}
+   */
   settleBoxes() {
     // Icon cards: if the tags would wrap below the footer line, drop them
     document.querySelectorAll('.box').forEach(el => {
@@ -729,6 +966,13 @@ class WebsiteGenerator {
     });
   }
 
+  /**
+   * Renders the pagination bar (item range, prev/next, page indicator).
+   *
+   * @param {number} totalPages  - total number of pages
+   * @param {number} totalBoxes  - total number of boxes across all pages
+   * @returns {HTMLDivElement} the pagination element
+   */
   renderPagination(totalPages, totalBoxes) {
     const pagination = document.createElement('div');
     pagination.className = 'pagination';
@@ -778,6 +1022,11 @@ class WebsiteGenerator {
     return pagination;
   }
 
+  /**
+   * Returns boxes filtered by the active tag and search term, pinned first.
+   *
+   * @returns {object[]} the filtered boxes (pinned boxes ahead of the rest)
+   */
   getFilteredBoxes() {
     let boxes = [...this.config.boxes];
     if (this.activeTag !== 'All') {
@@ -794,6 +1043,12 @@ class WebsiteGenerator {
     return [...pinnedBoxes, ...unpinnedBoxes];
   }
 
+  /**
+   * Sorts boxes by the active sort config, keeping pinned boxes on top.
+   *
+   * @param {object[]} boxes  - the boxes to sort
+   * @returns {object[]} the sorted boxes (pinned group ahead of the rest)
+   */
   sortBoxes(boxes) {
     if (this.activeSortBy === null) return boxes;
 
@@ -818,6 +1073,13 @@ class WebsiteGenerator {
     return [...sortedPinned, ...sortedUnpinned];
   }
 
+  /**
+   * Reads a nested value from an object by a key path.
+   *
+   * @param {object} obj     - the object to read from
+   * @param {string[]} keys  - the key path to follow
+   * @returns {*} the nested value, or null if any key is missing
+   */
   getNestedValue(obj, keys) {
     let value = obj;
     for (const key of keys) {
@@ -830,42 +1092,52 @@ class WebsiteGenerator {
     return value;
   }
 
-  updateGridRowHeight() {
-    // Content scale: fonts track the grid unit relative to the ~100px unit of
-    // the large layout, so any viewport renders a proportionally scaled
-    // version of the large design instead of squishing text into tight boxes
-    // (small screens) or leaving blank space in oversized boxes (big screens).
-    // Padding and gap are rem-based so they scale with the fonts; solving
-    // unit(scale) = 100 * scale gives scale = width / (pad + gaps + 100 * columns).
+  /**
+   * Sets --content-scale so fonts track the grid unit, then sizes the grid rows
+   * to square units on medium/large screens.
+   *
+   * Fonts scale relative to the ~100px unit of the large layout, so any viewport
+   * renders a proportionally scaled version of that design instead of squishing
+   * text (small screens) or leaving blank space (big screens). Padding and gap
+   * are rem-based, so solving unit(scale) = GRID_UNIT * scale gives
+   * scale = width / (pad + gaps + GRID_UNIT * columns), clamped and capped at
+   * SCALE_MAX so wide monitors get side margin instead of upscaled everything.
+   *
+   * @returns {void}
+   */
+  updateRowHeight() {
     const columns = this.getColumns();
     const small = this.currentMode === 'small';
-    const pad = small ? 32 : 64;
-    const gapEst = small ? 12 : 16;
-    // Blog posts render in a fixed 1000px column, so scaling with the window
-    // would just shorten line lengths; keep the old conservative cap there
+    const pad = small ? PAD_SMALL : PAD_LARGE;
+    const gapEst = small ? GAP_SMALL : GAP_LARGE;
+    // Blog posts render in a fixed 1000px column, so keep their conservative cap
     const isBlogPage = this.config.boxes.every(box => box.isBlogPost);
-    // Cap at 1.0 = native design scale: beyond --content-max-width the layout
-    // stops growing and the sides become plain margin (capped, centered column)
-    // instead of scaling everything up on large monitors.
-    const maxScale = isBlogPage ? 1.15 : 1;
-    const rawScale = window.innerWidth / (pad + (columns - 1) * gapEst + 100 * columns);
-    const scale = Math.min(maxScale, Math.max(0.65, rawScale));
+    const maxScale = isBlogPage ? SCALE_MAX_BLOG : SCALE_MAX;
+    const rawScale = window.innerWidth / (pad + (columns - 1) * gapEst + GRID_UNIT * columns);
+    const scale = Math.min(maxScale, Math.max(SCALE_MIN, rawScale));
     document.documentElement.style.setProperty('--content-scale', scale.toFixed(3));
     const container = document.querySelector('.boxes-container');
     if (!container) return;
     if (small) {
-      // Small mode: natural box heights (auto rows), square cards keep their
-      // aspect via CSS aspect-ratio
+      // Small mode: natural box heights, square cards keep aspect via CSS
       container.style.gridAutoRows = 'auto';
       return;
     }
     // Medium/large: rows are square units so boxes keep their configured aspect
     const containerWidth = container.clientWidth;
-    const gap = parseFloat(getComputedStyle(container).gap) || 16;
+    const gap = parseFloat(getComputedStyle(container).gap) || GAP_LARGE;
     const columnWidth = (containerWidth - (columns - 1) * gap) / columns;
     container.style.gridAutoRows = `${columnWidth}px`;
   }
 
+  /**
+   * Finds the first-fit top-left cell for a box of the given size.
+   *
+   * @param {boolean[][]} grid  - the occupancy grid
+   * @param {number} width      - box width in columns
+   * @param {number} height     - box height in rows
+   * @returns {{row: number, col: number}|null} the position, or null if none fits
+   */
   findPosition(grid, width, height) {
     for (let row = 0; row < grid.length - height; row++) {
       for (let col = 0; col <= grid[0].length - width; col++) {
@@ -877,6 +1149,16 @@ class WebsiteGenerator {
     return null;
   }
 
+  /**
+   * Whether a box of the given size fits with its top-left at (startRow, startCol).
+   *
+   * @param {boolean[][]} grid  - the occupancy grid
+   * @param {number} startRow   - top row of the candidate position
+   * @param {number} startCol   - left column of the candidate position
+   * @param {number} width      - box width in columns
+   * @param {number} height     - box height in rows
+   * @returns {boolean} true when all covered cells are free
+   */
   canPlaceBox(grid, startRow, startCol, width, height) {
     for (let row = startRow; row < startRow + height; row++) {
       for (let col = startCol; col < startCol + width; col++) {
@@ -886,7 +1168,15 @@ class WebsiteGenerator {
     return true;
   }
 
-  // Helper: render image or SVG from image_url
+  /**
+   * Renders a box image from an image_url, supporting "svg:name:color" icons.
+   *
+   * @param {string} imageUrl        - image path or "svg:iconName:color"
+   * @param {string} title           - alt text for raster images
+   * @param {boolean} isFullSize     - use the full-box image class when true
+   * @param {number[]|null} imageSize  - optional [w, h] intrinsic size (CLS hint)
+   * @returns {string} the image or SVG HTML, or "" if unavailable
+   */
   renderImage(imageUrl, title, isFullSize = false, imageSize = null) {
     if (imageUrl.startsWith('svg:')) {
       const [, iconName, color = ''] = imageUrl.split(':');
@@ -913,17 +1203,30 @@ class WebsiteGenerator {
     return img.outerHTML;
   }
 
-  renderBox(box, width, position) {
+  /**
+   * Renders a single box element (title, body, footer, tags) and its behavior.
+   *
+   * Places the box via grid position (or auto-flow when position is null),
+   * wires optional href navigation, renders markdown/code/image bodies, and
+   * attaches TOC scroll and tag-filter handlers.
+   *
+   * @param {object} box                          - the box config
+   * @param {number} width                        - column span for this box
+   * @param {{row: number, col: number}|null} position  - grid position, or null for auto-flow
+   * @param {{w: number, h: number}} dims         - resolved mode dimensions
+   * @returns {HTMLDivElement} the box element
+   */
+  renderBox(box, width, position, dims) {
     const boxEl = document.createElement('div');
     boxEl.className = `box${box.pinned ? ' box-pinned' : ''}${box.isBlogPost ? ' box-blog-post' : ''}`;
     if (position) {
       boxEl.style.gridColumn = `${position.col + 1} / span ${width}`;
-      if (!box.isBlogPost) boxEl.style.gridRow = `${position.row + 1} / span ${box.h}`;
+      if (!box.isBlogPost) boxEl.style.gridRow = `${position.row + 1} / span ${dims.h}`;
     } else {
       // Small-viewport auto flow: natural height, source order
       boxEl.style.gridColumn = `span ${width}`;
       boxEl.classList.add('box-auto');
-      if (box.w === box.h) boxEl.classList.add('box-square');
+      if (dims.w === dims.h) boxEl.classList.add('box-square');
     }
 
     // Make box clickable if href provided
@@ -1045,6 +1348,11 @@ class WebsiteGenerator {
     return boxEl;
   }
 
+  /**
+   * Renders the site footer (divider and footer text).
+   *
+   * @returns {HTMLDivElement} the footer element
+   */
   renderFooter() {
     const footer = document.createElement('div');
     footer.className = 'site-footer';
@@ -1059,7 +1367,12 @@ class WebsiteGenerator {
     return footer;
   }
 
-  renderBackToTop() {
+  /**
+   * Renders the back-to-top button that smooth-scrolls to the top on click.
+   *
+   * @returns {HTMLButtonElement} the back-to-top button
+   */
+  renderTopButton() {
     const button = document.createElement('button');
     button.className = 'back-to-top';
     button.id = 'back-to-top';
@@ -1072,6 +1385,12 @@ class WebsiteGenerator {
     return button;
   }
 
+  /**
+   * Sets the active tag filter, resets to page 1, and re-renders content.
+   *
+   * @param {string} tag  - the tag to filter by ("All" clears the filter)
+   * @returns {void}
+   */
   filterByTag(tag) {
     this.activeTag = tag;
     this.currentPage = 1; 
@@ -1083,6 +1402,11 @@ class WebsiteGenerator {
     this.reRenderContent();
   }
 
+  /**
+   * Binds the search-input and sort-select listeners for the selection area.
+   *
+   * @returns {void}
+   */
   attachEventListeners() {
     // Appearance controls live in the "Aa" popover (createSettingsMenu); their
     // change handlers are bound per-button there and persist via StateManager.

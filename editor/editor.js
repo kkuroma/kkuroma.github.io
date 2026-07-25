@@ -4,6 +4,12 @@
  */
 
 class BlogEditor {
+  /**
+   * Creates the editor, restoring theme/variant/fontSize shared with the site.
+   *
+   * Reads the saved appearance from StateManager (website.js) so the editor
+   * matches the main site, seeds empty metadata/content, then runs init().
+   */
   constructor() {
     this.mode = 'edit'; // 'edit' or 'preview' mode
     // Share theme/variant/fontSize with the main site via StateManager (website.js)
@@ -26,6 +32,11 @@ class BlogEditor {
     this.init();
   }
 
+  /**
+   * Wires up the editor: dropdowns, appearance, listeners, and default date.
+   *
+   * @returns {void}
+   */
   init() {
     this.populateDropdowns();
     this.applyTheme();
@@ -37,6 +48,11 @@ class BlogEditor {
     if (loading) loading.remove();
   }
 
+  /**
+   * Fills the font-size, theme, and variant selects with their options.
+   *
+   * @returns {void}
+   */
   populateDropdowns() {
     const fill = (id, options, selected) => {
       const select = document.getElementById(id);
@@ -66,6 +82,11 @@ class BlogEditor {
     ], this.variantMode);
   }
 
+  /**
+   * Resolves 'system' variant to the OS preference, else the chosen variant.
+   *
+   * @returns {'dark'|'light'} the effective color variant
+   */
   getEffectiveVariant() {
     if (this.variantMode === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -73,6 +94,14 @@ class BlogEditor {
     return this.variantMode;
   }
 
+  /**
+   * Applies the current theme palette to CSS variables and syncs the boot cache.
+   *
+   * Writes both light and dark variants to the StateManager paletteCache so the
+   * pre-paint boot script in index.html can restyle without a flash.
+   *
+   * @returns {void}
+   */
   applyTheme() {
     if (typeof THEMES === 'undefined') return;
     const colors = THEMES[this.theme][this.variant];
@@ -90,6 +119,11 @@ class BlogEditor {
     }
   }
 
+  /**
+   * Sets the base font size CSS variable from the current fontSize key.
+   *
+   * @returns {void}
+   */
   applyFontSize() {
     const root = document.documentElement;
     const fontSizes = {
@@ -101,11 +135,24 @@ class BlogEditor {
     root.style.setProperty('--font-size-base', fontSizes[this.fontSize] || fontSizes['medium']);
   }
 
+  /**
+   * Defaults the creation-date input to today's date.
+   *
+   * @returns {void}
+   */
   setDefaultDate() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date-created-input').value = today;
   }
 
+  /**
+   * Binds all toolbar, input, and appearance-control event listeners.
+   *
+   * Appearance changes are persisted via StateManager so the main site picks
+   * up the same theme/variant/font size.
+   *
+   * @returns {void}
+   */
   attachEventListeners() {
     // Mode toggle
     document.getElementById('toggle-mode-btn').addEventListener('click', () => {
@@ -159,12 +206,22 @@ class BlogEditor {
     });
   }
 
+  /**
+   * Refreshes the character-count readout from the content textarea.
+   *
+   * @returns {void}
+   */
   updateCharCount() {
     const textarea = document.getElementById('content-textarea');
     const count = textarea.value.length;
     document.getElementById('char-count').textContent = count.toLocaleString();
   }
 
+  /**
+   * Toggles between edit and preview modes, rendering the preview on entry.
+   *
+   * @returns {void}
+   */
   toggleMode() {
     const btnText = document.getElementById('toggle-mode-text');
     const editMode = document.getElementById('edit-mode');
@@ -177,18 +234,23 @@ class BlogEditor {
       editMode.style.display = 'none';
       previewMode.style.display = 'block';
       this.renderPreview();
-      this.setupPreviewScrollListener();
+      this.addPreviewScroll();
     } else {
       // Switch to edit
       this.mode = 'edit';
       btnText.textContent = 'Preview';
       editMode.style.display = 'block';
       previewMode.style.display = 'none';
-      this.removePreviewScrollListener();
+      this.removePreviewScroll();
     }
   }
 
-  setupPreviewScrollListener() {
+  /**
+   * Adds the scroll listener that shows the preview's back-to-top button.
+   *
+   * @returns {void}
+   */
+  addPreviewScroll() {
     // Add scroll listener for back-to-top button in preview
     this.previewScrollHandler = () => {
       const backToTop = document.getElementById('preview-back-to-top');
@@ -203,12 +265,26 @@ class BlogEditor {
     window.addEventListener('scroll', this.previewScrollHandler);
   }
 
-  removePreviewScrollListener() {
+  /**
+   * Removes the preview scroll listener if one is attached.
+   *
+   * @returns {void}
+   */
+  removePreviewScroll() {
     if (this.previewScrollHandler) {
       window.removeEventListener('scroll', this.previewScrollHandler);
     }
   }
 
+  /**
+   * Renders the live preview: header, parsed markdown body, and footer.
+   *
+   * Collects the current metadata and content, parses the markdown (lazy-loading
+   * KaTeX when needed), applies syntax highlighting, and injects a back-to-top
+   * button.
+   *
+   * @returns {Promise<void>}
+   */
   async renderPreview() {
     // Collect current data
     this.collectMetadata();
@@ -293,8 +369,15 @@ class BlogEditor {
     container.appendChild(backToTop);
   }
 
-  // Date + read-time line; the subtitle and footer differ only in how the
-  // optional "Updated" date is wrapped
+  /**
+   * Builds the date + read-time line for the preview header or footer.
+   *
+   * The subtitle and footer differ only in how the optional "Updated" date is
+   * wrapped, selected by parenUpdated.
+   *
+   * @param {boolean} parenUpdated  - wrap the update date in parens when true
+   * @returns {string} the assembled date/meta line
+   */
   dateLine(parenUpdated) {
     const date = this.metadata.date_created
       ? new Date(this.metadata.date_created).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -307,6 +390,11 @@ class BlogEditor {
     return `${date}${updated} · ${this.calculateReadingTime(this.content)} read`;
   }
 
+  /**
+   * Reads the metadata form fields into this.metadata.
+   *
+   * @returns {void}
+   */
   collectMetadata() {
     this.metadata.title = document.getElementById('title-input').value;
     this.metadata.date_created = document.getElementById('date-created-input').value;
@@ -319,6 +407,12 @@ class BlogEditor {
     this.metadata.pinned = document.getElementById('pinned-input').checked;
   }
 
+  /**
+   * Estimates reading time from a markdown string at 250 words per minute.
+   *
+   * @param {string} markdownContent  - the raw markdown to measure
+   * @returns {string} human-readable duration, e.g. "5 min"
+   */
   calculateReadingTime(markdownContent) {
     const words = markdownContent.split(/\s+/).filter(word => word.trim().length > 0);
     const wordCount = words.length;
@@ -327,6 +421,12 @@ class BlogEditor {
     return `${readTime} min`;
   }
 
+  /**
+   * Handles a BLOG_*.js file upload, parsing it and loading it into the form.
+   *
+   * @param {Event} event  - the file input change event
+   * @returns {void}
+   */
   handleFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -362,6 +462,12 @@ class BlogEditor {
     event.target.value = '';
   }
 
+  /**
+   * Populates the editor form and content from a parsed blog config.
+   *
+   * @param {object} config  - parsed blog config (title, dates, tags, content, ...)
+   * @returns {void}
+   */
   loadConfig(config) {
     // Populate metadata fields
     document.getElementById('title-input').value = config.title || '';
@@ -378,6 +484,11 @@ class BlogEditor {
     this.updateCharCount();
   }
 
+  /**
+   * Validates the form, generates a BLOG_*.js file, and downloads it.
+   *
+   * @returns {void}
+   */
   exportBlog() {
     // Collect data
     this.collectMetadata();
@@ -417,6 +528,11 @@ class BlogEditor {
     alert(`Exported as ${filename}`);
   }
 
+  /**
+   * Clears every form field and resets the creation date to today.
+   *
+   * @returns {void}
+   */
   clearEditor() {
     // Clear all fields
     document.getElementById('title-input').value = '';

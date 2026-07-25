@@ -25,7 +25,7 @@
       }
       const sizes = { small: '14px', medium: '16px', large: '18px', xlarge: '20px' };
       root.style.setProperty('--font-size-base', sizes[s.fontSize] || '16px');
-      // Pre-paint --content-scale estimate (mirror of updateGridRowHeight() in
+      // Pre-paint --content-scale estimate (mirror of updateRowHeight() in
       // website.js; keep the formula and breakpoints in sync) so the first
       // paint doesn't shift when the real scale lands. Editor page omits this
       // block: it has no tiling grid.
@@ -65,7 +65,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', async function() {
       await window.blogLoader.loadAllBlogs();
-      const BLOG_CONFIG = window.blogLoader.generateBlogListingConfig();
+      const BLOG_CONFIG = window.blogLoader.buildListConfig();
       window.router.register('/', HOME_CONFIG);
       window.router.register('/projects', PROJECTS_CONFIG);
       window.router.register('/graphics', GRAPHICS_CONFIG);

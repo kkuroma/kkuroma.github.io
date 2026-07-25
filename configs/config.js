@@ -41,6 +41,7 @@ const HOME_CONFIG = {
       type: "markdown",
       w: 6,
       h: 3,
+      medium: { w: 4, h: 4 },
       pinned: true,
       image_url: "./assets/profile.webp",
       image_size: [360, 350],
@@ -62,6 +63,7 @@ Other than that, I also play the **[piano]{color:primary}** and design **[origam
       type: "markdown",
       w: 6,
       h: 3,
+      medium: { w: 4, h: 4 },
       pinned: true,
       image_url: "",
       content: {
@@ -81,6 +83,7 @@ Anyways, feel free to check around and make yourself at home!`
       type: "markdown",
       w: 4,
       h: 3,
+      medium: { h: 4 },
       pinned: false,
       href: "#/blog/welcome-to-kuroma-dev",
       image_url: "",

@@ -45,6 +45,12 @@
  */
 
 class MarkdownParser {
+  /**
+   * Creates a parser bound to a theme/variant for color resolution.
+   *
+   * @param {string|null} theme    - theme name, or null to skip color lookup
+   * @param {string|null} variant  - 'dark'/'light', or null to skip color lookup
+   */
   constructor(theme = null, variant = null) {
     this.theme = theme;
     this.variant = variant;
@@ -55,7 +61,15 @@ class MarkdownParser {
     }
   }
 
-  /* Sanitize HTML to prevent XSS */
+  /**
+   * Escapes HTML by round-tripping through a text node (XSS prevention).
+   *
+   * Escapes &, <, > (but not quotes), so attacker-controlled values placed in a
+   * quoted attribute must still be neutralized at that sink.
+   *
+   * @param {string} str  - untrusted text to sanitize
+   * @returns {string} the HTML-escaped text, or "" for non-strings
+   */
   sanitizeText(str) {
     if (typeof str !== 'string') return '';
     const div = document.createElement('div');
@@ -63,7 +77,12 @@ class MarkdownParser {
     return div.innerHTML;
   }
 
-  /* Escape HTML entities */
+  /**
+   * Manually escapes &, <, >, ", and ' for code content and HTML attributes.
+   *
+   * @param {string} text  - text to escape
+   * @returns {string} the escaped text
+   */
   escapeHtml(text) {
     const escapeMap = {
       '&': '&amp;',
@@ -75,12 +94,22 @@ class MarkdownParser {
     return text.replace(/[&<>"']/g, char => escapeMap[char]);
   }
 
-  /* Heading text -> anchor id (shared by headings and the TOC) */
+  /**
+   * Converts heading text to an anchor id (shared by headings and the TOC).
+   *
+   * @param {string} text  - heading text
+   * @returns {string} a lowercased, hyphenated slug
+   */
   slugify(text) {
     return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
-  /* Split "{caption, w, h}" media params into caption text and numeric size */
+  /**
+   * Splits a "{caption, w, h}" media param string into its parts.
+   *
+   * @param {string} params  - the raw brace contents (comma-separated)
+   * @returns {{caption: string, width: string, height: string, spoiler: boolean}} parsed params
+   */
   parseMediaParams(params) {
     const parts = (params || '').split(',').map(p => p.trim());
     const numbers = parts.filter(p => /^\d+$/.test(p));
@@ -89,7 +118,13 @@ class MarkdownParser {
     return { caption: text.join(', '), width: numbers[0] || '', height: numbers[1] || '', spoiler };
   }
 
-  /* Wrap a media element in <figure> when a caption is given */
+  /**
+   * Wraps a media element in a <figure> with <figcaption> when a caption exists.
+   *
+   * @param {HTMLElement} el   - the media element to wrap
+   * @param {string} caption   - caption text; empty returns the bare element
+   * @returns {string} the element or figure outerHTML
+   */
   withCaption(el, caption) {
     if (!caption) return el.outerHTML;
     const figure = document.createElement('figure');
@@ -100,7 +135,16 @@ class MarkdownParser {
     return figure.outerHTML;
   }
 
-  /* Sanitize URLs */
+  /**
+   * Sanitizes a URL for safe interpolation into an href attribute.
+   *
+   * Strips control chars, blocks dangerous protocols (javascript/data/etc.),
+   * enforces a scheme allowlist, then percent-encodes attribute-breakout chars
+   * so the result is safe inside href="...".
+   *
+   * @param {string} url  - the untrusted URL
+   * @returns {string} a safe URL, or "#" if blocked
+   */
   sanitizeUrl(url) {
     if (!url || typeof url !== 'string') return '#';
     // Strip characters JS/HTML would ignore but that let a scheme hide from the
@@ -125,7 +169,16 @@ class MarkdownParser {
       c => '%' + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'));
   }
 
-  /* Main parse method */
+  /**
+   * Parses a markdown-like string into an HTML string.
+   *
+   * Sanitizes the input, pre-generates the TOC if #TOC is present, splits into
+   * items (code blocks, math blocks, TOC placeholders, paragraphs), then renders
+   * each in order.
+   *
+   * @param {string} text  - the raw markdown source
+   * @returns {string} the rendered HTML, or "" for empty input
+   */
   parse(text) {
     if (!text) return '';
 
@@ -159,7 +212,15 @@ class MarkdownParser {
     return result;
   }
 
-  /* Parse text into array of items */
+  /**
+   * Splits sanitized text into an ordered list of renderable items.
+   *
+   * Extracts triple-backtick code blocks and $$...$$ math blocks (skipping $$
+   * inside inline code), then delegates the remaining text to parseTextPart.
+   *
+   * @param {string} text  - sanitized markdown text
+   * @returns {object[]} items tagged is_code / is_math_block / is_toc or paragraph
+   */
   parseToItems(text) {
     const items = [];
 
@@ -242,7 +303,16 @@ class MarkdownParser {
     return items;
   }
 
-  /* Parse text part (no triple backticks) into items */
+  /**
+   * Splits a code-block-free text run into paragraph items.
+   *
+   * Splits on blank lines, marks a lone #TOC placeholder, and for paragraphs
+   * with inline code renders <code> segments plus inline markdown (flagging
+   * has_inline_html so renderParagraph skips a second inline pass).
+   *
+   * @param {string} text  - text with no triple-backtick blocks
+   * @returns {object[]} paragraph items
+   */
   parseTextPart(text) {
     const items = [];
 
@@ -312,7 +382,13 @@ class MarkdownParser {
     return items;
   }
 
-  /* Render code block */
+  /**
+   * Renders a fenced code block with syntax highlighting and a copy button.
+   *
+   * @param {string} code      - the raw (sanitized) code
+   * @param {string} language  - language tag, or "" for none
+   * @returns {string} a <pre><code> HTML block
+   */
   renderCodeBlock(code, language) {
     // Unescape HTML entities from initial sanitization so that e.g. < shows as <
     code = this.unescapeHtml(code);
@@ -329,7 +405,13 @@ class MarkdownParser {
     return `<pre class="code-block-wrapper">${copyBtn}<code class="${langClass}" data-raw="${escapedRaw}">${highlightedCode}</code></pre>\n`;
   }
 
-  /* Syntax highlighting */
+  /**
+   * Highlights code via Prism when the language is known, else escapes it.
+   *
+   * @param {string} code      - the code to highlight
+   * @param {string} language  - language tag or alias (js, ts, py, sh, yml)
+   * @returns {string} highlighted or escaped HTML
+   */
   highlightCode(code, language) {
     if (language && typeof Prism !== 'undefined') {
       const aliases = {
@@ -348,7 +430,16 @@ class MarkdownParser {
     return this.escapeHtml(code);
   }
 
-  /* Render paragraph with markdown processing */
+  /**
+   * Detects a paragraph's block type and renders it to HTML.
+   *
+   * Checks in priority order: heading, horizontal rule, image row, blockquote,
+   * lists, table, lone iframe, then a default <p>.
+   *
+   * @param {string} text            - the paragraph text
+   * @param {boolean} hasInlineHtml  - skip processInline when already rendered
+   * @returns {string} the rendered block HTML
+   */
   renderParagraph(text, hasInlineHtml = false) {
     text = text.trim();
     if (!text) return '';
@@ -410,7 +501,16 @@ class MarkdownParser {
     return `<p>${content}</p>\n`;
   }
 
-  /* Process inline markdown (bold, italic, links, etc.) */
+  /**
+   * Applies inline markdown and custom extensions to a text segment.
+   *
+   * Handles inline math, theme/hex/rainbow colors, SVG icons, images, iframes
+   * (including click-to-load spoilers), bold/italic/underline/strikethrough,
+   * and links. Inline code is assumed already converted to <code>.
+   *
+   * @param {string} text  - the text segment to process
+   * @returns {string} the processed HTML
+   */
   processInline(text) {
     // Note: inline code has already been converted to <code> tags
     // So we won't match backticks here
@@ -534,7 +634,12 @@ class MarkdownParser {
     return result;
   }
 
-  /* Parse image row */
+  /**
+   * Renders a pipe-separated row of images into a flex row container.
+   *
+   * @param {string} text  - the raw image-row markdown
+   * @returns {string} a <div class="image-row"> HTML block
+   */
   parseImageRow(text) {
     const images = text.split('|').map(img => img.trim()).filter(img => img);
     const imageHTML = images.map(img => {
@@ -564,7 +669,13 @@ class MarkdownParser {
     return `<div class="image-row">${imageHTML}</div>\n`;
   }
 
-  /* Parse table */
+  /**
+   * Renders markdown table lines into an HTML <table>.
+   *
+   * @param {string[]} lines         - table rows (line 2 is the separator)
+   * @param {boolean} hasInlineHtml  - skip processInline on cells when true
+   * @returns {string} the table HTML
+   */
   parseTable(lines, hasInlineHtml = false) {
     let html = '<table>\n';
 
@@ -594,7 +705,14 @@ class MarkdownParser {
     return html;
   }
 
-  /* Parse list */
+  /**
+   * Renders an indented markdown list into nested HTML lists.
+   *
+   * @param {string} text            - the raw list markdown
+   * @param {'ul'|'ol'} listType     - the list element to emit
+   * @param {boolean} hasInlineHtml  - skip processInline on items when true
+   * @returns {string} the nested list HTML
+   */
   parseList(text, listType, hasInlineHtml = false) {
     const lines = text.split('\n');
     const items = [];
@@ -650,7 +768,15 @@ class MarkdownParser {
     return buildList(items, 0, items[0]?.indent || 0).html;
   }
 
-  /* Generate TOC */
+  /**
+   * Builds a nested table-of-contents nav from the document's headings.
+   *
+   * Scans headings outside code blocks and emits scroll-to links; returns a
+   * placeholder message when there are no headings.
+   *
+   * @param {string} text  - the full markdown source
+   * @returns {string} the TOC nav HTML
+   */
   generateTOC(text) {
     const headings = [];
     let inCodeBlock = false;
@@ -703,12 +829,22 @@ class MarkdownParser {
     return tocHTML;
   }
 
-  /* Unescape sanitized HTML entities for KaTeX input */
+  /**
+   * Reverses entity escaping (for KaTeX input and inline code).
+   *
+   * @param {string} text  - text containing HTML entities
+   * @returns {string} the unescaped text
+   */
   unescapeHtml(text) {
     return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
   }
 
-  /* Render block math ($$...$$) */
+  /**
+   * Renders a $$...$$ block as KaTeX display math, or plain text as fallback.
+   *
+   * @param {string} math  - the math source (sanitized)
+   * @returns {string} the rendered math HTML
+   */
   renderMathBlock(math) {
     const raw = this.unescapeHtml(math.trim());
     if (typeof katex !== 'undefined') {
@@ -719,7 +855,12 @@ class MarkdownParser {
     return `<p>$$${this.escapeHtml(raw)}$$</p>\n`;
   }
 
-  /* Create rainbow text */
+  /**
+   * Wraps text in per-character rainbow spans with staggered animation delays.
+   *
+   * @param {string} text  - the text to animate
+   * @returns {string} the wrapped rainbow HTML
+   */
   createRainbowText(text) {
     let charIndex = 0;
     const words = text.split(' ');
@@ -735,7 +876,13 @@ class MarkdownParser {
     return `<span class="rainbow-text">${wrappedWords.join(' ')}</span>`;
   }
 
-  /* Set theme */
+  /**
+   * Rebinds the parser to a new theme/variant and refreshes its color map.
+   *
+   * @param {string} theme    - theme name
+   * @param {string} variant  - 'dark' or 'light'
+   * @returns {void}
+   */
   setTheme(theme, variant) {
     this.theme = theme;
     this.variant = variant;
@@ -749,6 +896,15 @@ class MarkdownParser {
 MarkdownParser._katexLoaded = false;
 MarkdownParser._katexLoading = null;
 
+/**
+ * Lazy-loads KaTeX (CSS + JS) the first time math is encountered.
+ *
+ * Resolves immediately if the text has no "$" or KaTeX is already present, and
+ * dedupes concurrent loads. Resolves even on load failure so parsing continues.
+ *
+ * @param {string} text  - the markdown to check for math
+ * @returns {Promise<void>} settles once KaTeX is ready (or skipped)
+ */
 MarkdownParser.loadKatexIfNeeded = function(text) {
   // Quick check: does the text contain any $ signs?
   if (!text || !text.includes('$')) return Promise.resolve();
