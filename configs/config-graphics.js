@@ -1,7 +1,7 @@
 const GRAPHICS_CONFIG = {
   pageTitle: "Computer Graphics - kuroma.dev",
   favicon: "./assets/icon.webp",
-  theme: "Natsumikan",
+  theme: "Akiba",
   variant: "dark",
   fontSize: "medium",
   navbar: {

@@ -1,7 +1,7 @@
 const NOT_FOUND_CONFIG = {
   pageTitle: "404 - Page Not Found",
   favicon: "./assets/icon.webp",
-  theme: "Natsumikan",
+  theme: "Akiba",
   variant: "dark",
   fontSize: "medium",
   navbar: {

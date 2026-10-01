@@ -1,7 +1,7 @@
 const PROJECTS_CONFIG = {
   pageTitle: "Projects - kuroma.dev",
   favicon: "./assets/icon.webp",
-  theme: "Natsumikan",
+  theme: "Akiba",
   variant: "dark",
   fontSize: "medium",
   navbar: {

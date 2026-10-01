@@ -1,7 +1,7 @@
 const SERVICES_CONFIG = {
   pageTitle: "Services - kuroma.dev",
   favicon: "./assets/icon.webp",
-  theme: "Natsumikan",
+  theme: "Akiba",
   variant: "dark",
   fontSize: "medium",
   navbar: {

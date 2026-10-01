@@ -1,7 +1,7 @@
 const HOME_CONFIG = {
   pageTitle: "Home - kuroma.dev",
   favicon: "./assets/icon.webp",
-  theme: "Natsumikan",
+  theme: "Akiba",
   variant: "dark",
   fontSize: "medium",
   navbar: {
