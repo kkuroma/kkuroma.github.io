@@ -1,6 +1,6 @@
 # All new kuroma.dev
 
-My current personal website, featuring a minimal tiling design! Visit [my website](https://kuroma.dev) to see it in action!! Design and functionality inspired by [HarutoHiroki's website](https://harutohiroki.com).
+My current personal website, featuring a minimal tiling design. Visit [my website](https://kuroma.dev) to see it in action!! Design and functionality inspired by [HarutoHiroki's website](https://harutohiroki.com).
 
 ## Creating your own site with my template
 
