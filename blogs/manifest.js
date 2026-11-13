@@ -4,5 +4,6 @@ window.BLOG_MANIFEST = [
   "BLOG_discord-s-beginning-of-an-end",
   "BLOG_markdown-editor-tutorial",
   "BLOG_my-2025-tech-journey",
-  "BLOG_welcome-to-kuroma-dev"
+  "BLOG_welcome-to-kuroma-dev",
+  "BLOG_the-nixos-experience",
 ];

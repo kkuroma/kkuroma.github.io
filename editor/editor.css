@@ -2,8 +2,7 @@
 body { background-color: var(--base); color: var(--text); min-height: 100vh; }
 #app { min-height: 100vh; display: flex; flex-direction: column; }
 
-/* Navbar */
-.navbar { margin: 0.75rem 1.5rem; }
+/* Navbar: inherits centering (margin: 0 auto) from website.css */
 .nav-link { color: var(--text); text-decoration: none; font-weight: 500; transition: color 0.2s; display: flex; align-items: center; gap: 0.5rem; }
 .nav-link:hover { color: var(--primary); }
 
